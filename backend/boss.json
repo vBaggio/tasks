@@ -1,0 +1,14 @@
+{
+	"name": "TasksAPI",
+	"description": "",
+	"version": "1",
+	"homepage": "tasks.com",
+	"mainsrc": "./src",
+	"projects": [],
+	"dependencies": {
+		"github.com/hashload/handle-exception": "^0.2.0",
+		"github.com/hashload/horse": "^3.1.9",
+		"github.com/hashload/horse-basic-auth": "^1.2.5",
+		"github.com/hashload/jhonson": "^1.2.1"
+	}
+}
