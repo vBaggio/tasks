@@ -12,7 +12,11 @@ uses
   TasksAPI.Conn.Config in 'src\conn\TasksAPI.Conn.Config.pas',
   TasksAPI.Conn.MSSQL in 'src\conn\TasksAPI.Conn.MSSQL.pas',
   TasksAPI.Conn.Factory in 'src\conn\TasksAPI.Conn.Factory.pas',
-  TasksAPI.Database.Setup in 'src\database\TasksAPI.Database.Setup.pas';
+  TasksAPI.Database.Setup in 'src\database\TasksAPI.Database.Setup.pas',
+  TasksAPI.Model.Entity.Task in 'src\model\entity\TasksAPI.Model.Entity.Task.pas',
+  TasksAPI.Model.Dto.Task in 'src\model\dto\TasksAPI.Model.Dto.Task.pas',
+  TasksAPI.Repository.Interfaces in 'src\repository\TasksAPI.Repository.Interfaces.pas',
+  TasksAPI.Service.Interfaces in 'src\service\TasksAPI.Service.Interfaces.pas';
 
 const
   PORT = 9000;

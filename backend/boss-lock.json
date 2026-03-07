@@ -33,6 +33,14 @@
 			"artifacts": {},
 			"failed": false,
 			"changed": false
+		},
+		"https://github.com/paolo-rossi/delphi-neon": {
+			"name": "delphi-neon",
+			"version": "v3.2.0",
+			"hash": "9366898ecae85717f110295f58dbb88a",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
 		}
 	}
 }
