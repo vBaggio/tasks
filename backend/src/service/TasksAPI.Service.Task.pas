@@ -3,6 +3,7 @@
 interface
 
 uses
+  System.SysUtils,
   System.Generics.Collections,
   TasksAPI.Repository.Interfaces,
   TasksAPI.Service.Interfaces,
@@ -20,6 +21,7 @@ type
     procedure ValidateStatus(AStatus: Integer);
   public
     constructor Create(ARepository: ITaskRepository);
+
     function ListAll: TObjectList<TTaskModel>;
     function GetById(AId: Integer): TTaskModel;
     function Add(ATask: TTaskModel): TTaskModel;
@@ -29,9 +31,6 @@ type
   end;
 
 implementation
-
-uses
-  System.SysUtils;
 
 const
   TITLE_MAX_LENGTH = 100;
@@ -43,7 +42,6 @@ const
 
 constructor TTaskService.Create(ARepository: ITaskRepository);
 begin
-  inherited Create;
   FRepository := ARepository;
 end;
 

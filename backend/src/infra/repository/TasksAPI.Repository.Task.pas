@@ -17,6 +17,7 @@ type
     function MapRow(AQuery: TFDQuery): TTaskModel;
   public
     constructor Create(AConnection: IConnection);
+
     function FindAll: TObjectList<TTaskModel>;
     function FindById(AId: Integer): TTaskModel;
     function Insert(ATask: TTaskModel): Integer;
@@ -29,13 +30,13 @@ implementation
 
 uses
   System.SysUtils,
+  Data.Db,
   FireDAC.Stan.Param;
 
 { TTaskRepository }
 
 constructor TTaskRepository.Create(AConnection: IConnection);
 begin
-  inherited Create;
   FConnection := AConnection;
 end;
 

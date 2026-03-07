@@ -35,7 +35,6 @@ uses
 
 constructor TConnectionMSSQL.Create(const AConfig: TConnectionConfig);
 begin
-  inherited Create;
   FDatabaseName := AConfig.Database;
   FConnection := TFDConnection.Create(nil);
   FConnection.LoginPrompt := False;
@@ -52,7 +51,7 @@ end;
 destructor TConnectionMSSQL.Destroy;
 begin
   FConnection.Free;
-  inherited Destroy;
+  inherited;
 end;
 
 function TConnectionMSSQL.GetConn: TFDConnection;
