@@ -10,10 +10,12 @@ type
   TConnectionMSSQL = class(TInterfacedObject, IConnection)
   private
     FConnection: TFDConnection;
+    FDatabaseName: string;
   public
     constructor Create(const AConfig: TConnectionConfig);
     destructor Destroy; override;
     function GetConn: TFDConnection;
+    function DatabaseName: string;
 
     class function New(const AConfig: TConnectionConfig): IConnection;
   end;
@@ -34,6 +36,7 @@ uses
 constructor TConnectionMSSQL.Create(const AConfig: TConnectionConfig);
 begin
   inherited Create;
+  FDatabaseName := AConfig.Database;
   FConnection := TFDConnection.Create(nil);
   FConnection.LoginPrompt := False;
   FConnection.Params.Clear;
@@ -43,6 +46,7 @@ begin
   FConnection.Params.AddPair('Database', AConfig.Database);
   FConnection.Params.AddPair('User_Name', AConfig.UserName);
   FConnection.Params.AddPair('Password', AConfig.Password);
+  FConnection.Params.AddPair('ConnectionTimeout', '5');
 end;
 
 destructor TConnectionMSSQL.Destroy;
@@ -54,8 +58,20 @@ end;
 function TConnectionMSSQL.GetConn: TFDConnection;
 begin
   if not FConnection.Connected then
+  begin
     FConnection.Connected := True;
+    if not FConnection.Connected then
+      raise Exception.CreateFmt(
+        'Falha ao conectar ao banco de dados "%s". Verifique o servidor e as credenciais no arquivo .ini.',
+        [FDatabaseName]
+      );
+  end;
   Result := FConnection;
+end;
+
+function TConnectionMSSQL.DatabaseName: string;
+begin
+  Result := FDatabaseName;
 end;
 
 class function TConnectionMSSQL.New(

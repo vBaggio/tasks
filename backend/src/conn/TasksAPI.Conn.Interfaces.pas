@@ -17,6 +17,7 @@ type
   IConnection = interface
     ['{69E96F76-0136-43F4-8CAD-EA4AA768A43A}']
     function GetConn: TFDConnection;
+    function DatabaseName: string;
   end;
 
 implementation

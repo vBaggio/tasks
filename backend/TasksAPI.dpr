@@ -21,31 +21,29 @@ uses
 const
   PORT = 9000;
 
+var
+  LConn, LConnMaster: IConnection;
 begin
-  WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
+
   try
-    try
-      // Poderia ter sido implementado usando um script SQL, optei por criar
-      // o schema e tabela via código para facilitar a execução do projeto
-      TDatabaseSetupMSSQL.Execute(TConnectionFactory.MasterConn, TConnectionFactory.Conn);
+    WriteLn('Conectando ao banco de dados...');
+    TDatabaseSetupMSSQL.Execute(TConnectionFactory.MasterConn, TConnectionFactory.Conn);
+    WriteLn('Conectado com sucesso');
 
-      THorse.Get('/ping',
-        procedure(Req: THorseRequest; Res: THorseResponse)
-        begin
-          Res.Send('pong');
-        end);
+    WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
 
-      THorse.Listen(PORT);
-    except
-      on E: Exception do
+    THorse.Get('/ping',
+      procedure(Req: THorseRequest; Res: THorseResponse)
       begin
-        WriteLn('Erro inesperado: ' + E.ClassName + ' | ' + E.Message);
-        Sleep(5000);
-      end;
+        Res.Send('pong');
+      end);
 
+    THorse.Listen(PORT);
+  except
+    on E: Exception do
+    begin
+      WriteLn('Erro fatal na inicialização: ' + E.Message);
+      Readln; //Para o console não fechar quando ocorrer erro, permitindo ler a mensagem
     end;
-  finally
-    WriteLn('Finalizando API...');
   end;
-
 end.

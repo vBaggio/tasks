@@ -23,7 +23,7 @@ var
   LDatabaseName: string;
   LSafeName: string;
 begin
-  LDatabaseName := AAppConnection.GetConn.Params.Values['Database'];
+  LDatabaseName := AAppConnection.DatabaseName;
   LSafeName := StringReplace(LDatabaseName, ']', ']]', [rfReplaceAll]);
 
   AMasterConnection.GetConn.ExecSQL(
