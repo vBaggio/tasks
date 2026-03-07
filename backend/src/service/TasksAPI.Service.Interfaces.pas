@@ -4,7 +4,8 @@ interface
 
 uses
   System.Generics.Collections,
-  TasksAPI.Model.Entity.Task;
+  TasksAPI.Model.Entity.Task,
+  TasksAPI.Model.Dto.Stats;
 
 type
   ITaskService = interface
@@ -14,7 +15,7 @@ type
     function Add(ATask: TTaskModel): TTaskModel;
     procedure UpdateStatus(AId: Integer; AStatus: Integer);
     procedure Delete(AId: Integer);
-    function GetStats: TTaskStats;
+    function GetStats: TTaskStatsDto;
   end;
 
 implementation

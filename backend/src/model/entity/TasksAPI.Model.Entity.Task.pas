@@ -28,17 +28,6 @@ type
     property HasCompletedAt: Boolean read FHasCompletedAt write FHasCompletedAt;
   end;
 
-  TTaskStats = class
-  private
-    FTotalCount: Integer;
-    FAveragePriorityPending: Double;
-    FCompletedLastSevenDays: Integer;
-  public
-    property TotalCount: Integer read FTotalCount write FTotalCount;
-    property AveragePriorityPending: Double read FAveragePriorityPending write FAveragePriorityPending;
-    property CompletedLastSevenDays: Integer read FCompletedLastSevenDays write FCompletedLastSevenDays;
-  end;
-
 implementation
 
 end.

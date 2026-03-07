@@ -15,6 +15,7 @@ uses
   TasksAPI.Database.Setup in 'src\database\TasksAPI.Database.Setup.pas',
   TasksAPI.Model.Entity.Task in 'src\model\entity\TasksAPI.Model.Entity.Task.pas',
   TasksAPI.Model.Dto.Task in 'src\model\dto\TasksAPI.Model.Dto.Task.pas',
+  TasksAPI.Model.Dto.Stats in 'src\model\dto\TasksAPI.Model.Dto.Stats.pas',
   TasksAPI.Repository.Interfaces in 'src\repository\TasksAPI.Repository.Interfaces.pas',
   TasksAPI.Service.Interfaces in 'src\service\TasksAPI.Service.Interfaces.pas';
 
