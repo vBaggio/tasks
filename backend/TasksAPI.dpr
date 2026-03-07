@@ -7,6 +7,7 @@
 uses
   System.SysUtils,
   Horse,
+  TasksAPI.Startup in 'src\TasksAPI.Startup.pas',
   TasksAPI.Controller.Tasks in 'src\controller\TasksAPI.Controller.Tasks.pas',
   TasksAPI.Conn.Interfaces in 'src\infra\conn\TasksAPI.Conn.Interfaces.pas',
   TasksAPI.Conn.Config in 'src\infra\conn\TasksAPI.Conn.Config.pas',
@@ -21,30 +22,14 @@ uses
   TasksAPI.Service.Interfaces in 'src\service\TasksAPI.Service.Interfaces.pas',
   TasksAPI.Service.Task in 'src\service\TasksAPI.Service.Task.pas';
 
-const
-  PORT = 9000;
-
 begin
-
   try
-    WriteLn('Conectando ao banco de dados...');
-    TDatabaseSetupMSSQL.Execute(TConnectionFactory.MasterConn, TConnectionFactory.Conn);
-    WriteLn('Conectado com sucesso');
-
-    WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
-
-    THorse.Get('/ping',
-      procedure(Req: THorseRequest; Res: THorseResponse)
-      begin
-        Res.Send('pong');
-      end);
-
-    THorse.Listen(PORT);
+    TAppStartup.Execute;
   except
     on E: Exception do
     begin
-      WriteLn('Erro fatal na inicialização: ' + E.Message);
-      Readln; //Para o console não fechar quando ocorrer erro, permitindo ler a mensagem
+      WriteLn('Erro fatal: ' + E.Message);
+      ReadLn;
     end;
   end;
 end.

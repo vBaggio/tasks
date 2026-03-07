@@ -19,6 +19,7 @@ type
     FRepository: ITaskRepository;
     procedure ValidateForInsert(ATask: TTaskModel);
     procedure ValidateStatus(AStatus: Integer);
+    procedure EnsureTaskExists(AId: integer);
   public
     constructor Create(ARepository: ITaskRepository);
 
@@ -51,23 +52,19 @@ begin
     raise EValidationException.Create('O título da tarefa é obrigatório.');
 
   if Length(ATask.Title) > TITLE_MAX_LENGTH then
-    raise EValidationException.CreateFmt(
-      'O título deve ter no máximo %d caracteres.', [TITLE_MAX_LENGTH]);
+    raise EValidationException.CreateFmt('O título deve ter no máximo %d caracteres.', [TITLE_MAX_LENGTH]);
 
   if Length(ATask.Description) > DESCRIPTION_MAX_LENGTH then
-    raise EValidationException.CreateFmt(
-      'A descrição deve ter no máximo %d caracteres.', [DESCRIPTION_MAX_LENGTH]);
+    raise EValidationException.CreateFmt('A descrição deve ter no máximo %d caracteres.', [DESCRIPTION_MAX_LENGTH]);
 
   if (ATask.Priority < PRIORITY_MIN) or (ATask.Priority > PRIORITY_MAX) then
-    raise EValidationException.CreateFmt(
-      'A prioridade deve ser entre %d (baixa) e %d (alta).', [PRIORITY_MIN, PRIORITY_MAX]);
+    raise EValidationException.CreateFmt('A prioridade deve ser entre %d (baixa) e %d (alta).', [PRIORITY_MIN, PRIORITY_MAX]);
 end;
 
 procedure TTaskService.ValidateStatus(AStatus: Integer);
 begin
   if (AStatus <> Ord(tsPending)) and (AStatus <> Ord(tsCompleted)) then
-    raise EValidationException.CreateFmt(
-      'Status inválido. Use %d (pendente) ou %d (concluída).', [Ord(tsPending), Ord(tsCompleted)]);
+    raise EValidationException.CreateFmt('Status inválido. Use %d (pendente) ou %d (concluída).', [Ord(tsPending), Ord(tsCompleted)]);
 end;
 
 function TTaskService.ListAll: TObjectList<TTaskModel>;
@@ -78,7 +75,8 @@ end;
 function TTaskService.GetById(AId: Integer): TTaskModel;
 begin
   Result := FRepository.FindById(AId);
-  if Result = nil then
+
+  if not Assigned(Result) then
     raise ENotFoundException.CreateFmt('Tarefa com id %d não encontrada.', [AId]);
 end;
 
@@ -95,14 +93,20 @@ end;
 procedure TTaskService.UpdateStatus(AId: Integer; AStatus: Integer);
 begin
   ValidateStatus(AStatus);
-  GetById(AId);
+  EnsureTaskExists(AId);
   FRepository.UpdateStatus(AId, AStatus);
 end;
 
 procedure TTaskService.Delete(AId: Integer);
 begin
-  GetById(AId);
+  EnsureTaskExists(AId);
   FRepository.Delete(AId);
+end;
+
+procedure TTaskService.EnsureTaskExists(AId: integer);
+begin
+  if not FRepository.TaskExists(AId) then
+    raise ENotFoundException.CreateFmt('Tarefa com id %d não encontrada.', [AId]);
 end;
 
 function TTaskService.GetStats: TTaskStatsDto;

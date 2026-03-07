@@ -28,6 +28,10 @@ type
     class function FromModel(ATask: TTaskModel): TTaskResponseDto; static;
   end;
 
+  TUpdateStatusRequestDto = record
+    Status: Integer;
+  end;
+
 implementation
 
 { TCreateTaskRequestDto }

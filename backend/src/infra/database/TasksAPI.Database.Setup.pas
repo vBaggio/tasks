@@ -8,30 +8,38 @@ uses
 type
   TDatabaseSetupMSSQL = class
   public
-    class procedure Execute(
-      const AMasterConnection: IConnection;
-      const AAppConnection: IConnection); static;
+    class procedure Execute(const AConfig: TConnectionConfig); static;
   end;
 
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils,
+  TasksAPI.Conn.MSSQL;
 
-class procedure TDatabaseSetupMSSQL.Execute(const AMasterConnection: IConnection; const AAppConnection: IConnection);
+class procedure TDatabaseSetupMSSQL.Execute(const AConfig: TConnectionConfig);
 var
-  LDatabaseName: string;
-  LSafeName: string;
+  LSetupConfig: TConnectionConfig;
+  LAppConn, LSetupConn: IConnection;
+  LDatabase: string;
 begin
-  LDatabaseName := AAppConnection.DatabaseName;
-  LSafeName := StringReplace(LDatabaseName, ']', ']]', [rfReplaceAll]);
+  LDatabase := AConfig.Database;
 
-  AMasterConnection.GetConn.ExecSQL(
-    'IF DB_ID(N''' + LDatabaseName + ''') IS NULL ' +
-    'BEGIN EXEC(''CREATE DATABASE [' + LSafeName + ']'') END'
-  );
+  LSetupConfig := AConfig;
+  LSetupConfig.Database := '';
+  try
+    LSetupConn := TConnectionMSSQL.Create(LSetupConfig);
+    LSetupConn.GetConn.ExecSQL(
+      'IF DB_ID(N''' + LDatabase + ''') IS NULL ' +
+      'BEGIN EXEC(''CREATE DATABASE [' + LDatabase + ']'') END'
+    );
+  except
+    on E: Exception do
+      WriteLn('Aviso: não foi possível verificar/criar o banco "' + LDatabase + '": ' + E.Message);
+  end;
 
-  AAppConnection.GetConn.ExecSQL(
+  LAppConn := TConnectionMSSQL.Create(AConfig);
+  LAppConn.GetConn.ExecSQL(
     'IF OBJECT_ID(N''dbo.tasks'', N''U'') IS NULL ' +
     'BEGIN ' +
     'CREATE TABLE dbo.tasks (' +

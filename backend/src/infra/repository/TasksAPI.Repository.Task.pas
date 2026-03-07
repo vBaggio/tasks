@@ -24,6 +24,7 @@ type
     procedure UpdateStatus(AId: Integer; AStatus: Integer);
     procedure Delete(AId: Integer);
     function GetStats: TTaskStatsDto;
+    function TaskExists(AId: Integer): Boolean;
   end;
 
 implementation
@@ -52,6 +53,22 @@ begin
   Result.HasCompletedAt := not AQuery.FieldByName('completed_at').IsNull;
   if Result.HasCompletedAt then
     Result.CompletedAt := AQuery.FieldByName('completed_at').AsDateTime;
+end;
+
+function TTaskRepository.TaskExists(AId: Integer): Boolean;
+var
+  LQuery: TFDQuery;
+begin
+  LQuery := TFDQuery.Create(nil);
+  try
+    LQuery.Connection := FConnection.GetConn;
+    LQuery.SQL.Text := 'SELECT 1 FROM tasks WHERE id = :id';
+    LQuery.ParamByName('id').AsInteger := AId;
+    LQuery.Open;
+    Result := not LQuery.IsEmpty;
+  finally
+    LQuery.Free;
+  end;
 end;
 
 function TTaskRepository.FindAll: TObjectList<TTaskModel>;

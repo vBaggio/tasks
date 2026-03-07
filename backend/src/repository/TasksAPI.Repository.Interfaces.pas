@@ -16,6 +16,7 @@ type
     procedure UpdateStatus(AId: Integer; AStatus: Integer);
     procedure Delete(AId: Integer);
     function GetStats: TTaskStatsDto;
+    function TaskExists(AId: Integer): Boolean;
   end;
 
 implementation
