@@ -20,7 +20,10 @@ uses
   TasksAPI.Repository.Interfaces in 'src\repository\TasksAPI.Repository.Interfaces.pas',
   TasksAPI.Repository.Task in 'src\infra\repository\TasksAPI.Repository.Task.pas',
   TasksAPI.Service.Interfaces in 'src\service\TasksAPI.Service.Interfaces.pas',
-  TasksAPI.Service.Task in 'src\service\TasksAPI.Service.Task.pas';
+  TasksAPI.Service.Task in 'src\service\TasksAPI.Service.Task.pas',
+  TasksAPI.Service.Auth in 'src\service\TasksAPI.Service.Auth.pas',
+  TasksAPI.Model.Entity.User in 'src\model\entity\TasksAPI.Model.Entity.User.pas',
+  TasksAPI.Repository.User in 'src\infra\repository\TasksAPI.Repository.User.pas';
 
 begin
   TAppStartup.Execute;

@@ -18,6 +18,11 @@ type
     function GetStats: TTaskStatsDto;
   end;
 
+  IAuthService = interface
+    ['{A1B2C3D4-E5F6-4789-ABCD-123456789ABC}']
+    function Validate(const AUsername, APassword: string): Boolean;
+  end;
+
 implementation
 
 end.

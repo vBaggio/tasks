@@ -11,10 +11,12 @@ type
 implementation
 
 uses
-  System.SysUtils, Horse,
+  System.SysUtils, Horse, Horse.BasicAuthentication,
   TasksAPI.Conn.Interfaces, TasksAPI.Conn.Factory,
   TasksAPI.Repository.Interfaces, TasksAPI.Repository.Task,
+  TasksAPI.Repository.User,
   TasksAPI.Service.Interfaces, TasksAPI.Service.Task,
+  TasksAPI.Service.Auth,
   TasksAPI.Controller.Tasks;
 
 const
@@ -23,8 +25,10 @@ const
 class procedure TAppStartup.Execute;
 var
   LConn: IConnection;
-  LRepository: ITaskRepository;
-  LService: ITaskService;
+  LTaskRepository: ITaskRepository;
+  LUserRepository: IUserRepository;
+  LTaskService: ITaskService;
+  LAuthService: IAuthService;
   LController: TTaskController;
 begin
   try
@@ -32,10 +36,20 @@ begin
     LConn := TConnectionFactory.ConnMSSQL;
     WriteLn('Conectado com sucesso');
 
-    LRepository := TTaskRepository.Create(LConn);
-    LService := TTaskService.Create(LRepository);
+    LUserRepository := TUserRepository.Create;
+    LAuthService := TAuthService.Create(LUserRepository);
 
-    LController := TTaskController.Create(LService);
+    THorse.Use(HorseBasicAuthentication(
+      function(const AUsername, APassword: string): Boolean
+      begin
+        Result := LAuthService.Validate(AUsername, APassword);
+      end
+    ));
+
+    LTaskRepository := TTaskRepository.Create(LConn);
+    LTaskService := TTaskService.Create(LTaskRepository);
+
+    LController := TTaskController.Create(LTaskService);
     LController.RegisterRoutes;
 
     WriteLn('Iniciando API na porta ' + PORT.ToString + '...');

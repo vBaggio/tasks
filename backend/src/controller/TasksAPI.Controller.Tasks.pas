@@ -112,7 +112,10 @@ var
   LStats: TTaskStatsDto;
 begin
   LStats := FService.GetStats;
-  Res.ContentType('application/json').Send(TNeon.ValueToJSONString(TValue.From<TTaskStatsDto>(LStats), NeonConfig));
+
+  Res
+    .ContentType('application/json')
+    .Send(TNeon.ValueToJSONString(TValue.From<TTaskStatsDto>(LStats), NeonConfig));
 end;
 
 procedure TTaskController.HandleGetAll(Req: THorseRequest; Res: THorseResponse);
@@ -126,8 +129,10 @@ begin
     SetLength(LArray, LList.Count);
     for I := 0 to LList.Count - 1 do
       LArray[I] := TTaskResponseDto.FromModel(LList[I]);
-    Res.ContentType('application/json')
-       .Send(TNeon.ValueToJSONString(TValue.From<TArray<TTaskResponseDto>>(LArray), NeonConfig));
+
+    Res
+      .ContentType('application/json')
+      .Send(TNeon.ValueToJSONString(TValue.From<TArray<TTaskResponseDto>>(LArray), NeonConfig));
   finally
     LList.Free;
   end;
@@ -148,9 +153,11 @@ begin
       LResult := FService.Add(LModel);
       try
         LResponse := TTaskResponseDto.FromModel(LResult);
-        Res.ContentType('application/json')
-           .Status(THTTPStatus.Created)
-           .Send(TNeon.ValueToJSONString(TValue.From<TTaskResponseDto>(LResponse), NeonConfig));
+
+        Res
+          .ContentType('application/json')
+          .Status(THTTPStatus.Created)
+          .Send(TNeon.ValueToJSONString(TValue.From<TTaskResponseDto>(LResponse), NeonConfig));
       finally
         LResult.Free;
       end;
