@@ -1,4 +1,4 @@
-unit TasksAPI.Startup;
+﻿unit TasksAPI.Startup;
 
 interface
 
@@ -34,12 +34,12 @@ begin
   try
     WriteLn('Conectando ao banco de dados...');
     LConn := TConnectionFactory.ConnMSSQL;
-    WriteLn('Conectado com sucesso');
+    WriteLn('Conectado com sucesso.');
 
     LUserRepository := TUserRepository.Create;
     LAuthService := TAuthService.Create(LUserRepository);
 
-    //middleware de autentica��o
+    //Middleware de autenticação
     THorse.Use(HorseBasicAuthentication(
       function(const AUsername, APassword: string): Boolean
       begin
@@ -47,19 +47,17 @@ begin
       end
     ));
 
-
     LTaskRepository := TTaskRepository.Create(LConn);
     LTaskService := TTaskService.Create(LTaskRepository);
 
-    LTaskRepository := TTaskRepository.Create(LConn);
-    LTaskService := TTaskService.Create(LTaskRepository);
-
+    //Controller rest
     LController := TTaskController.Create(LTaskService);
     try
       LController.RegisterRoutes;
 
-      WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
+      WriteLn('Inicializando API na porta ' + PORT.ToString + '...');
       THorse.Listen(PORT);
+      WriteLn('Encerrando aplicação...');
     finally
       LController.Free;
     end;
