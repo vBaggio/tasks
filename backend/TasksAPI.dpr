@@ -1,31 +1,47 @@
-program TasksAPI;
+﻿program TasksAPI;
 
 {$APPTYPE CONSOLE}
 
 {$R *.res}
 
 uses
-  System.SysUtils, Horse,
-  TasksAPI.Controller.Tasks in 'src\TasksAPI.Controller.Tasks.pas';
+  System.SysUtils,
+  Horse,
+  TasksAPI.Controller.Tasks in 'src\controller\TasksAPI.Controller.Tasks.pas',
+  TasksAPI.Conn.Interfaces in 'src\conn\TasksAPI.Conn.Interfaces.pas',
+  TasksAPI.Conn.Config in 'src\conn\TasksAPI.Conn.Config.pas',
+  TasksAPI.Conn.MSSQL in 'src\conn\TasksAPI.Conn.MSSQL.pas',
+  TasksAPI.Conn.Factory in 'src\conn\TasksAPI.Conn.Factory.pas',
+  TasksAPI.Database.Setup in 'src\database\TasksAPI.Database.Setup.pas';
+
+const
+  PORT = 9000;
 
 begin
-  WriteLn('Iniciando Api...');
+  WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
   try
     try
+      // Poderia ter sido implementado usando um script SQL, optei por criar
+      // o schema e tabela via código para facilitar a execução do projeto
+      TDatabaseSetupMSSQL.Execute(TConnectionFactory.MasterConn, TConnectionFactory.Conn);
+
       THorse.Get('/ping',
         procedure(Req: THorseRequest; Res: THorseResponse)
         begin
           Res.Send('pong');
         end);
 
-      THorse.Listen(9000);
+      THorse.Listen(PORT);
     except
       on E: Exception do
-        WriteLn('ERRO INESPERADO: ' + E.ClassName + ' | ' + E.Message);
+      begin
+        WriteLn('Erro inesperado: ' + E.ClassName + ' | ' + E.Message);
+        Sleep(5000);
+      end;
 
     end;
   finally
-    WriteLn('Finalizando Api...');
+    WriteLn('Finalizando API...');
   end;
 
 end.
