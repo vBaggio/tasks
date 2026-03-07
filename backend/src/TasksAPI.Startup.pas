@@ -27,18 +27,26 @@ var
   LService: ITaskService;
   LController: TTaskController;
 begin
-  WriteLn('Conectando ao banco de dados...');
-  LConn := TConnectionFactory.ConnMSSQL;
-  WriteLn('Conectado com sucesso');
+  try
+    WriteLn('Conectando ao banco de dados...');
+    LConn := TConnectionFactory.ConnMSSQL;
+    WriteLn('Conectado com sucesso');
 
-  LRepository := TTaskRepository.Create(LConn);
-  LService := TTaskService.Create(LRepository);
+    LRepository := TTaskRepository.Create(LConn);
+    LService := TTaskService.Create(LRepository);
 
-  LController := TTaskController.Create(LService);
-  LController.RegisterRoutes;
+    LController := TTaskController.Create(LService);
+    LController.RegisterRoutes;
 
-  WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
-  THorse.Listen(PORT);
+    WriteLn('Iniciando API na porta ' + PORT.ToString + '...');
+    THorse.Listen(PORT);
+  except
+    on E: Exception do
+    begin
+      WriteLn('Erro fatal: ' + E.Message);
+      ReadLn;
+    end;
+  end;
 end;
 
 end.

@@ -112,8 +112,7 @@ var
   LStats: TTaskStatsDto;
 begin
   LStats := FService.GetStats;
-  Res.ContentType('application/json')
-     .Send(TNeon.ValueToJSONString(TValue.From<TTaskStatsDto>(LStats), NeonConfig));
+  Res.ContentType('application/json').Send(TNeon.ValueToJSONString(TValue.From<TTaskStatsDto>(LStats), NeonConfig));
 end;
 
 procedure TTaskController.HandleGetAll(Req: THorseRequest; Res: THorseResponse);

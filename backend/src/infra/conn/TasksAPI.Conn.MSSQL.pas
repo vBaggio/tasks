@@ -14,6 +14,7 @@ type
   public
     constructor Create(const AConfig: TConnectionConfig);
     destructor Destroy; override;
+
     function GetConn: TFDConnection;
 
     class function New(const AConfig: TConnectionConfig): IConnection;

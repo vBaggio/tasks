@@ -16,7 +16,7 @@ implementation
 uses
   TasksAPI.Conn.Config,
   TasksAPI.Conn.MSSQL,
-  TasksAPI.Database.Setup;
+  TasksAPI.Database.SetupMSSQL;
 
 class function TConnectionFactory.ConnMSSQL: IConnection;
 var

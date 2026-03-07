@@ -13,7 +13,7 @@ uses
   TasksAPI.Conn.Config in 'src\infra\conn\TasksAPI.Conn.Config.pas',
   TasksAPI.Conn.MSSQL in 'src\infra\conn\TasksAPI.Conn.MSSQL.pas',
   TasksAPI.Conn.Factory in 'src\infra\conn\TasksAPI.Conn.Factory.pas',
-  TasksAPI.Database.Setup in 'src\infra\database\TasksAPI.Database.Setup.pas',
+  TasksAPI.Database.SetupMSSQL in 'src\infra\database\TasksAPI.Database.SetupMSSQL.pas',
   TasksAPI.Model.Entity.Task in 'src\model\entity\TasksAPI.Model.Entity.Task.pas',
   TasksAPI.Model.Dto.Task in 'src\model\dto\TasksAPI.Model.Dto.Task.pas',
   TasksAPI.Model.Dto.Stats in 'src\model\dto\TasksAPI.Model.Dto.Stats.pas',
@@ -23,13 +23,5 @@ uses
   TasksAPI.Service.Task in 'src\service\TasksAPI.Service.Task.pas';
 
 begin
-  try
-    TAppStartup.Execute;
-  except
-    on E: Exception do
-    begin
-      WriteLn('Erro fatal: ' + E.Message);
-      ReadLn;
-    end;
-  end;
+  TAppStartup.Execute;
 end.

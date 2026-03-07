@@ -168,12 +168,13 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="src\TasksAPI.Startup.pas"/>
         <DCCReference Include="src\controller\TasksAPI.Controller.Tasks.pas"/>
         <DCCReference Include="src\infra\conn\TasksAPI.Conn.Interfaces.pas"/>
         <DCCReference Include="src\infra\conn\TasksAPI.Conn.Config.pas"/>
         <DCCReference Include="src\infra\conn\TasksAPI.Conn.MSSQL.pas"/>
         <DCCReference Include="src\infra\conn\TasksAPI.Conn.Factory.pas"/>
-        <DCCReference Include="src\infra\database\TasksAPI.Database.Setup.pas"/>
+        <DCCReference Include="src\infra\database\TasksAPI.Database.SetupMSSQL.pas"/>
         <DCCReference Include="src\model\entity\TasksAPI.Model.Entity.Task.pas"/>
         <DCCReference Include="src\model\dto\TasksAPI.Model.Dto.Task.pas"/>
         <DCCReference Include="src\model\dto\TasksAPI.Model.Dto.Stats.pas"/>
