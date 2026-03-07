@@ -1,4 +1,4 @@
-unit TasksAPI.Service.Task;
+﻿unit TasksAPI.Service.Task;
 
 interface
 
@@ -50,15 +50,15 @@ end;
 procedure TTaskService.ValidateForInsert(ATask: TTaskModel);
 begin
   if Trim(ATask.Title) = '' then
-    raise EValidationException.Create('O t�tulo da tarefa � obrigat�rio.');
+    raise EValidationException.Create('O título da tarefa é obrigatório.');
 
   if Length(ATask.Title) > TITLE_MAX_LENGTH then
     raise EValidationException.CreateFmt(
-      'O t�tulo deve ter no m�ximo %d caracteres.', [TITLE_MAX_LENGTH]);
+      'O título deve ter no máximo %d caracteres.', [TITLE_MAX_LENGTH]);
 
   if Length(ATask.Description) > DESCRIPTION_MAX_LENGTH then
     raise EValidationException.CreateFmt(
-      'A descri��o deve ter no m�ximo %d caracteres.', [DESCRIPTION_MAX_LENGTH]);
+      'A descrição deve ter no máximo %d caracteres.', [DESCRIPTION_MAX_LENGTH]);
 
   if (ATask.Priority < PRIORITY_MIN) or (ATask.Priority > PRIORITY_MAX) then
     raise EValidationException.CreateFmt(
@@ -69,7 +69,7 @@ procedure TTaskService.ValidateStatus(AStatus: Integer);
 begin
   if (AStatus <> Ord(tsPending)) and (AStatus <> Ord(tsCompleted)) then
     raise EValidationException.CreateFmt(
-      'Status inv�lido. Use %d (pendente) ou %d (conclu�da).', [Ord(tsPending), Ord(tsCompleted)]);
+      'Status inválido. Use %d (pendente) ou %d (concluída).', [Ord(tsPending), Ord(tsCompleted)]);
 end;
 
 function TTaskService.ListAll: TObjectList<TTaskModel>;
@@ -81,7 +81,7 @@ function TTaskService.GetById(AId: Integer): TTaskModel;
 begin
   Result := FRepository.FindById(AId);
   if Result = nil then
-    raise ENotFoundException.CreateFmt('Tarefa com id %d n�o encontrada.', [AId]);
+    raise ENotFoundException.CreateFmt('Tarefa com id %d não encontrada.', [AId]);
 end;
 
 function TTaskService.Add(ATask: TTaskModel): TTaskModel;
