@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages,
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Buttons, Vcl.ImgList,
   TasksClient.Controller.Tasks,
   TasksClient.Model.Dto.Task,
   TasksClient.Model.Dto.Stats,
@@ -14,26 +14,30 @@ uses
 
 type
   TfrmMain = class(TForm)
-    pnlToolbar: TPanel;
-    btnCreate: TButton;
-    btnDelete: TButton;
-    btnRefresh: TButton;
+    imgRows: TImageList;
+    pnlContainer: TPanel;
+    pnlTop: TPanel;
+    lblTitle: TLabel;
     pnlStats: TPanel;
-    pnlStatTotal: TPanel;
     lblTotalTitle: TLabel;
     lblTotalCount: TLabel;
-    pnlStatAvg: TPanel;
     lblAvgTitle: TLabel;
     lblAvgPriority: TLabel;
-    pnlStatWeek: TPanel;
     lblWeekTitle: TLabel;
     lblCompletedWeek: TLabel;
+    pnlContent: TPanel;
     lvTasks: TListView;
+    pnlButtons: TPanel;
+    btnCreate: TBitBtn;
+    btnDelete: TBitBtn;
+    btnRefresh: TBitBtn;
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnCreateClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
+    procedure lvTasksDblClick(Sender: TObject);
+    procedure lvTasksItemChecked(Sender: TObject; Item: TListItem);
     procedure lvTasksCustomDrawSubItem(Sender: TCustomListView;
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       var DefaultDraw: Boolean);
@@ -54,10 +58,11 @@ var
 
 implementation
 
-uses
-  System.UITypes;
-
 {$R *.dfm}
+
+uses
+  System.UITypes,
+  System.DateUtils;
 
 function PriorityLabel(APriority: Integer): string;
 begin
@@ -67,6 +72,23 @@ begin
     3: Result := 'Alta';
   else
     Result := APriority.ToString;
+  end;
+end;
+
+function FormatApiDateTime(const AValue: string): string;
+var
+  LDt: TDateTime;
+begin
+  if AValue = '' then
+  begin
+    Result := '-';
+    Exit;
+  end;
+  try
+    LDt := ISO8601ToDate(AValue, False);
+    Result := FormatDateTime('dd/mm/yyyy HH:mm', LDt);
+  except
+    Result := AValue;
   end;
 end;
 
@@ -89,8 +111,8 @@ end;
 
 procedure TfrmMain.ClearListData;
 var
-  LItem: TListItem;
   I: Integer;
+  LItem: TListItem;
 begin
   for I := 0 to lvTasks.Items.Count - 1 do
   begin
@@ -121,12 +143,13 @@ begin
       LId^ := LTask.Id;
 
       LItem := lvTasks.Items.Add;
-      LItem.Caption := LTask.Title;
+      LItem.Caption := '';                              // column 0: checkbox only
       LItem.Data := LId;
-      LItem.SubItems.Add(LTask.Description);
-      LItem.SubItems.Add(PriorityLabel(LTask.Priority));
-      LItem.SubItems.Add(LTask.CreatedAt);
-      LItem.SubItems.Add(LTask.CompletedAt);
+      LItem.SubItems.Add(LTask.Title);                 // column 1
+      LItem.SubItems.Add(LTask.Description);           // column 2
+      LItem.SubItems.Add(PriorityLabel(LTask.Priority)); // column 3
+      LItem.SubItems.Add(FormatApiDateTime(LTask.CreatedAt));   // column 4
+      LItem.SubItems.Add(FormatApiDateTime(LTask.CompletedAt)); // column 5
       LItem.Checked := (LTask.Status = 1);
     end;
   finally
@@ -140,9 +163,9 @@ var
   LStats: TTaskStatsDto;
 begin
   LStats := FController.GetStats;
-  lblTotalCount.Caption      := LStats.TotalCount.ToString;
-  lblAvgPriority.Caption     := FormatFloat('0.0', LStats.AveragePriorityPending);
-  lblCompletedWeek.Caption   := LStats.CompletedLastSevenDays.ToString;
+  lblTotalCount.Caption    := LStats.TotalCount.ToString;
+  lblAvgPriority.Caption   := FormatFloat('0.0', LStats.AveragePriorityPending);
+  lblCompletedWeek.Caption := LStats.CompletedLastSevenDays.ToString;
 end;
 
 procedure TfrmMain.RefreshAll;
@@ -173,6 +196,35 @@ begin
   // Task 2.5
 end;
 
+procedure TfrmMain.lvTasksDblClick(Sender: TObject);
+var
+  LItem: TListItem;
+begin
+  LItem := lvTasks.Selected;
+  if Assigned(LItem) then
+    LItem.Checked := not LItem.Checked; // triggers OnItemChecked
+end;
+
+procedure TfrmMain.lvTasksItemChecked(Sender: TObject; Item: TListItem);
+var
+  LId, LNewStatus: Integer;
+begin
+  if FUpdatingList or not Assigned(Item.Data) then
+    Exit;
+
+  LId := PInteger(Item.Data)^;
+  LNewStatus := Ord(Item.Checked); // True=1 (concluída), False=0 (pendente)
+
+  try
+    FController.UpdateStatus(LId, LNewStatus);
+  except
+    on E: EApiException do
+      MessageDlg('Erro ao atualizar status: ' + E.Message, mtError, [mbOK], 0);
+    on E: Exception do
+      MessageDlg('Erro inesperado: ' + E.Message, mtError, [mbOK], 0);
+  end;
+end;
+
 procedure TfrmMain.lvTasksCustomDrawSubItem(Sender: TCustomListView;
   Item: TListItem; SubItem: Integer; State: TCustomDrawState;
   var DefaultDraw: Boolean);
@@ -180,7 +232,7 @@ var
   LIndex: Integer;
 begin
   DefaultDraw := True;
-  if SubItem <> 1 then   // SubItems[1] = Priority (0=Desc, 1=Priority, 2=CreatedAt, 3=CompletedAt)
+  if SubItem <> 2 then // SubItems[2] = Priority (0=Title, 1=Desc, 2=Priority ...)
     Exit;
 
   LIndex := Item.Index;
@@ -189,7 +241,7 @@ begin
 
   case FTasks[LIndex].Priority of
     1: Sender.Canvas.Font.Color := clGreen;
-    2: Sender.Canvas.Font.Color := $000080FF;  // orange
+    2: Sender.Canvas.Font.Color := $000080FF; // orange
     3: Sender.Canvas.Font.Color := clRed;
   end;
 end;
