@@ -131,4 +131,4 @@ A camada de **Autenticação (Auth Service)** do Backend já foi construída e a
 - **Senha:** `123456`
 
 > [!NOTE]
-> O Frontend já vem pré-configurado as credenciais padrão através do arquivo `TasksClient.ini`. É possível provocar falhas de autenticação propositalmente alterando a senha diretamente lá e observando o comportamento da aplicação ao receber o *Status 401 Unauthorized*.
+> O Frontend já vem pré-configurado com as credenciais padrão através do arquivo `TasksClient.ini`. É possível provocar falhas de autenticação propositalmente alterando a senha diretamente lá e observando o comportamento da aplicação ao receber o *Status 401 Unauthorized*.
