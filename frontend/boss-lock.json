@@ -1,0 +1,22 @@
+{
+	"hash": "d7ac9a807ff4ff0a24d85b01826c47d7",
+	"updated": "2026-03-08T04:19:55.2006077-03:00",
+	"installedModules": {
+		"github.com/viniciussanchez/restrequest4delphi": {
+			"name": "restrequest4delphi",
+			"version": "v4.0.23",
+			"hash": "9c56b6064b12085cf05b0696a11ea6e4",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		},
+		"https://github.com/paolo-rossi/delphi-neon": {
+			"name": "delphi-neon",
+			"version": "v3.2.0",
+			"hash": "9366898ecae85717f110295f58dbb88a",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
+		}
+	}
+}
