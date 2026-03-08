@@ -54,10 +54,10 @@ begin
   Result.Description := ATask.Description;
   Result.Status := ATask.Status;
   Result.Priority := ATask.Priority;
-  Result.CreatedAt := DateToISO8601(ATask.CreatedAt, False);
+  Result.CreatedAt := DateToISO8601(ATask.CreatedAt, True);
 
   if ATask.HasCompletedAt then
-    Result.CompletedAt := DateToISO8601(ATask.CompletedAt, False)
+    Result.CompletedAt := DateToISO8601(ATask.CompletedAt, True)
   else
     Result.CompletedAt := '';
 end;
