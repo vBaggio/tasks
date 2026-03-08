@@ -29,6 +29,11 @@ type
     constructor Create(const AMessage: string);
   end;
 
+  EApiConnectionException = class(EApiException)
+  public
+    constructor Create(const AMessage: string);
+  end;
+
 implementation
 
 { EApiException }
@@ -58,6 +63,13 @@ end;
 constructor EApiUnauthorizedException.Create(const AMessage: string);
 begin
   inherited Create(401, AMessage);
+end;
+
+{ EApiConnectionException }
+
+constructor EApiConnectionException.Create(const AMessage: string);
+begin
+  inherited Create(0, AMessage);
 end;
 
 end.

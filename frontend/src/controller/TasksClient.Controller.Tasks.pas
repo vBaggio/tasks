@@ -3,6 +3,7 @@ unit TasksClient.Controller.Tasks;
 interface
 
 uses
+  System.Classes,
   TasksClient.Client.Interfaces,
   TasksClient.Model.Dto.Task,
   TasksClient.Model.Dto.Stats;
@@ -18,9 +19,14 @@ type
     function CreateTask(const ARequest: TCreateTaskRequestDto): TTaskResponseDto;
     procedure UpdateStatus(AId: Integer; AStatus: Integer);
     procedure DeleteTask(AId: Integer);
+    function ShowCreateDialog(AOwner: TComponent): Boolean;
   end;
 
 implementation
+
+uses
+  TasksClient.View.TaskCreate,
+  Vcl.Forms, Vcl.Controls;
 
 { TTaskController }
 
@@ -52,6 +58,19 @@ end;
 procedure TTaskController.DeleteTask(AId: Integer);
 begin
   FApiClient.Delete(AId);
+end;
+
+function TTaskController.ShowCreateDialog(AOwner: TComponent): Boolean;
+var
+  LDlg: TfrmTaskCreate;
+begin
+  LDlg := TfrmTaskCreate.Create(AOwner);
+  try
+    LDlg.SetController(Self);
+    Result := LDlg.ShowModal = mrOk;
+  finally
+    LDlg.Free;
+  end;
 end;
 
 end.

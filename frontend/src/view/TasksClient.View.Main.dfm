@@ -1,9 +1,9 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
-  Caption = 'Gerenciador de Tarefas'
-  ClientHeight = 540
-  ClientWidth = 820
+  Caption = 'Tarefas'
+  ClientHeight = 458
+  ClientWidth = 784
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,18 +16,12 @@ object frmMain: TfrmMain
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 15
-  object imgRows: TImageList
-    Height = 20
-    Width = 1
-    Left = 16
-    Top = 504
-  end
   object pnlContainer: TPanel
     AlignWithMargins = True
     Left = 0
     Top = 0
-    Width = 820
-    Height = 540
+    Width = 784
+    Height = 458
     Margins.Left = 0
     Margins.Top = 0
     Margins.Right = 0
@@ -36,24 +30,29 @@ object frmMain: TfrmMain
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 820
+    ExplicitHeight = 540
     object pnlTop: TPanel
       Left = 0
       Top = 0
-      Width = 820
-      Height = 56
+      Width = 784
+      Height = 49
       Align = alTop
       BevelOuter = bvNone
+      Color = 16119285
       Padding.Left = 15
       Padding.Top = 5
       Padding.Right = 15
       Padding.Bottom = 5
+      ParentBackground = False
       TabOrder = 0
+      ExplicitWidth = 761
       object lblTitle: TLabel
         AlignWithMargins = True
         Left = 15
         Top = 5
-        Width = 790
-        Height = 46
+        Width = 754
+        Height = 39
         Margins.Left = 0
         Margins.Top = 0
         Margins.Right = 0
@@ -61,131 +60,43 @@ object frmMain: TfrmMain
         Align = alClient
         Alignment = taCenter
         AutoSize = False
-        Caption = 'Gerenciador de Tarefas'
+        Caption = 'Tarefas'
+        Color = clWindow
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 12615680
         Font.Height = -21
         Font.Name = 'Roboto'
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
         Layout = tlCenter
-      end
-    end
-    object pnlStats: TPanel
-      Left = 0
-      Top = 56
-      Width = 820
-      Height = 44
-      Align = alTop
-      BevelOuter = bvNone
-      Color = $00F5F5F5
-      Padding.Left = 20
-      Padding.Top = 6
-      Padding.Right = 20
-      Padding.Bottom = 6
-      ParentBackground = False
-      ParentColor = False
-      TabOrder = 1
-      object lblTotalTitle: TLabel
-        Left = 20
-        Top = 8
-        Width = 104
-        Height = 15
-        Caption = 'Total de Tarefas:'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGrayText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = []
-        ParentFont = False
-      end
-      object lblTotalCount: TLabel
-        Left = 130
-        Top = 8
-        Width = 8
-        Height = 15
-        Caption = '0'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 12615680
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
-      object lblAvgTitle: TLabel
-        Left = 280
-        Top = 8
-        Width = 173
-        Height = 15
-        Caption = 'M'#233'dia Prioridade (Pendentes):'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGrayText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = []
-        ParentFont = False
-      end
-      object lblAvgPriority: TLabel
-        Left = 459
-        Top = 8
-        Width = 22
-        Height = 15
-        Caption = '0.0'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 12615680
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
-      end
-      object lblWeekTitle: TLabel
-        Left = 560
-        Top = 8
-        Width = 120
-        Height = 15
-        Caption = 'Conclu'#237'das (7 dias):'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clGrayText
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = []
-        ParentFont = False
-      end
-      object lblCompletedWeek: TLabel
-        Left = 686
-        Top = 8
-        Width = 8
-        Height = 15
-        Caption = '0'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 12615680
-        Font.Height = -12
-        Font.Name = 'Segoe UI'
-        Font.Style = [fsBold]
-        ParentFont = False
+        ExplicitWidth = 731
+        ExplicitHeight = 60
       end
     end
     object pnlContent: TPanel
       Left = 0
-      Top = 100
-      Width = 820
-      Height = 440
+      Top = 49
+      Width = 784
+      Height = 409
       Align = alClient
       BevelOuter = bvNone
       Padding.Left = 15
       Padding.Right = 15
       Padding.Bottom = 5
-      TabOrder = 2
+      TabOrder = 1
+      ExplicitTop = 100
+      ExplicitWidth = 820
+      ExplicitHeight = 440
       object lvTasks: TListView
         Left = 15
         Top = 0
-        Width = 790
-        Height = 375
+        Width = 754
+        Height = 326
         Align = alClient
         Checkboxes = True
         Columns = <
           item
-            Caption = ''
             Width = 28
           end
           item
@@ -206,7 +117,7 @@ object frmMain: TfrmMain
           end
           item
             Caption = 'Conclu'#237'da em'
-            Width = 194
+            Width = 189
           end>
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -214,56 +125,171 @@ object frmMain: TfrmMain
         Font.Name = 'Segoe UI'
         Font.Style = []
         HideSelection = False
-        ParentFont = False
         ReadOnly = True
         RowSelect = True
+        ParentFont = False
         SmallImages = imgRows
         TabOrder = 0
         ViewStyle = vsReport
         OnCustomDrawSubItem = lvTasksCustomDrawSubItem
         OnDblClick = lvTasksDblClick
         OnItemChecked = lvTasksItemChecked
+        ExplicitWidth = 758
       end
       object pnlButtons: TPanel
         Left = 15
-        Top = 375
-        Width = 790
-        Height = 60
+        Top = 326
+        Width = 754
+        Height = 78
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitTop = 408
+        ExplicitWidth = 731
         DesignSize = (
-          790
-          60)
+          754
+          78)
         object btnCreate: TBitBtn
           Left = 0
-          Top = 12
+          Top = 32
           Width = 120
           Height = 36
+          Anchors = [akLeft, akBottom]
           Caption = 'Nova Tarefa'
           TabOrder = 0
           OnClick = btnCreateClick
+          ExplicitTop = 51
         end
         object btnDelete: TBitBtn
-          Left = 128
-          Top = 12
+          Left = 126
+          Top = 32
           Width = 100
           Height = 36
+          Anchors = [akLeft, akBottom]
           Caption = 'Excluir'
           TabOrder = 1
           OnClick = btnDeleteClick
+          ExplicitTop = 51
         end
         object btnRefresh: TBitBtn
-          Left = 662
-          Top = 12
-          Width = 120
+          Left = 631
+          Top = 32
+          Width = 123
           Height = 36
-          Anchors = [akLeft, akTop, akRight]
+          Anchors = [akRight, akBottom]
           Caption = 'Atualizar'
           TabOrder = 2
           OnClick = btnRefreshClick
+          ExplicitLeft = 608
+          ExplicitTop = 51
+        end
+        object pnlStats: TPanel
+          Left = 0
+          Top = 0
+          Width = 754
+          Height = 28
+          Align = alTop
+          BevelOuter = bvNone
+          Padding.Left = 20
+          Padding.Top = 6
+          Padding.Right = 20
+          Padding.Bottom = 6
+          ParentBackground = False
+          TabOrder = 3
+          ExplicitWidth = 731
+          DesignSize = (
+            754
+            28)
+          object lblAvgTitle: TLabel
+            Left = 120
+            Top = 7
+            Width = 159
+            Height = 15
+            Caption = 'M'#233'dia Prioridade (Pendentes):'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGrayText
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+          end
+          object lblAvgPriority: TLabel
+            Left = 285
+            Top = 7
+            Width = 17
+            Height = 15
+            Caption = '0.0'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 12615680
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object lblWeekTitle: TLabel
+            Left = 324
+            Top = 7
+            Width = 103
+            Height = 20
+            Anchors = [akLeft, akTop, akBottom]
+            Caption = 'Conclu'#237'das (7 dias):'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGrayText
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+            ExplicitHeight = 15
+          end
+          object lblCompletedWeek: TLabel
+            Left = 433
+            Top = 7
+            Width = 7
+            Height = 20
+            Anchors = [akLeft, akTop, akBottom]
+            Caption = '0'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 12615680
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitHeight = 15
+          end
+          object lblTotalTitle: TLabel
+            Left = 0
+            Top = 7
+            Width = 85
+            Height = 15
+            Caption = 'Total de Tarefas:'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGrayText
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+          end
+          object lblTotalCount: TLabel
+            Left = 91
+            Top = 7
+            Width = 7
+            Height = 15
+            Caption = '0'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = 12615680
+            Font.Height = -12
+            Font.Name = 'Segoe UI'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
         end
       end
     end
+  end
+  object imgRows: TImageList
+    Height = 20
+    Width = 1
+    Left = 16
+    Top = 504
   end
 end

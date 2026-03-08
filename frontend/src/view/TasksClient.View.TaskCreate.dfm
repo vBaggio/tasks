@@ -23,7 +23,6 @@ object frmTaskCreate: TfrmTaskCreate
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 360
     object lblTitle: TLabel
       Left = 12
       Top = 16
@@ -84,8 +83,6 @@ object frmTaskCreate: TfrmTaskCreate
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 240
-    ExplicitWidth = 360
     object btnSave: TButton
       Left = 196
       Top = 8
@@ -94,6 +91,7 @@ object frmTaskCreate: TfrmTaskCreate
       Caption = 'Salvar'
       Default = True
       TabOrder = 0
+      OnClick = btnSaveClick
     end
     object btnCancel: TButton
       Left = 277

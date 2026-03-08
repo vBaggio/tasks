@@ -10,7 +10,7 @@ uses
   TasksClient.Controller.Tasks,
   TasksClient.Model.Dto.Task,
   TasksClient.Model.Dto.Stats,
-  TasksClient.Model.Exceptions;
+  TasksClient.Model.Exceptions, System.ImageList;
 
 type
   TfrmMain = class(TForm)
@@ -18,19 +18,19 @@ type
     pnlContainer: TPanel;
     pnlTop: TPanel;
     lblTitle: TLabel;
-    pnlStats: TPanel;
-    lblTotalTitle: TLabel;
-    lblTotalCount: TLabel;
-    lblAvgTitle: TLabel;
-    lblAvgPriority: TLabel;
-    lblWeekTitle: TLabel;
-    lblCompletedWeek: TLabel;
     pnlContent: TPanel;
     lvTasks: TListView;
     pnlButtons: TPanel;
     btnCreate: TBitBtn;
     btnDelete: TBitBtn;
     btnRefresh: TBitBtn;
+    pnlStats: TPanel;
+    lblAvgTitle: TLabel;
+    lblAvgPriority: TLabel;
+    lblWeekTitle: TLabel;
+    lblCompletedWeek: TLabel;
+    lblTotalTitle: TLabel;
+    lblTotalCount: TLabel;
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnCreateClick(Sender: TObject);
@@ -49,6 +49,8 @@ type
     procedure LoadStats;
     procedure RefreshAll;
     procedure ClearListData;
+    function GetPriorityStr(APriority: Integer): string;
+    function FormatApiDateTime(const AValue: string): string;
   public
     procedure SetController(AController: TTaskController);
   end;
@@ -64,18 +66,19 @@ uses
   System.UITypes,
   System.DateUtils;
 
-function PriorityLabel(APriority: Integer): string;
+{ TfrmMain }
+
+procedure TfrmMain.SetController(AController: TTaskController);
 begin
-  case APriority of
-    1: Result := 'Baixa';
-    2: Result := 'M'#233'dia';
-    3: Result := 'Alta';
-  else
-    Result := APriority.ToString;
-  end;
+  FController := AController;
 end;
 
-function FormatApiDateTime(const AValue: string): string;
+procedure TfrmMain.FormShow(Sender: TObject);
+begin
+  RefreshAll;
+end;
+
+function TfrmMain.FormatApiDateTime(const AValue: string): string;
 var
   LDt: TDateTime;
 begin
@@ -92,34 +95,13 @@ begin
   end;
 end;
 
-{ TfrmMain }
-
-procedure TfrmMain.SetController(AController: TTaskController);
-begin
-  FController := AController;
-end;
-
-procedure TfrmMain.FormShow(Sender: TObject);
-begin
-  RefreshAll;
-end;
-
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   ClearListData;
 end;
 
 procedure TfrmMain.ClearListData;
-var
-  I: Integer;
-  LItem: TListItem;
 begin
-  for I := 0 to lvTasks.Items.Count - 1 do
-  begin
-    LItem := lvTasks.Items[I];
-    if Assigned(LItem.Data) then
-      Dispose(PInteger(LItem.Data));
-  end;
   lvTasks.Items.Clear;
   FTasks := nil;
 end;
@@ -129,7 +111,6 @@ var
   I: Integer;
   LItem: TListItem;
   LTask: TTaskResponseDto;
-  LId: PInteger;
 begin
   ClearListData;
   FTasks := FController.ListAll;
@@ -139,17 +120,15 @@ begin
     for I := 0 to High(FTasks) do
     begin
       LTask := FTasks[I];
-      New(LId);
-      LId^ := LTask.Id;
 
       LItem := lvTasks.Items.Add;
-      LItem.Caption := '';                              // column 0: checkbox only
-      LItem.Data := LId;
-      LItem.SubItems.Add(LTask.Title);                 // column 1
-      LItem.SubItems.Add(LTask.Description);           // column 2
-      LItem.SubItems.Add(PriorityLabel(LTask.Priority)); // column 3
-      LItem.SubItems.Add(FormatApiDateTime(LTask.CreatedAt));   // column 4
-      LItem.SubItems.Add(FormatApiDateTime(LTask.CompletedAt)); // column 5
+      LItem.Caption := '';
+      LItem.Data := Pointer(LTask.Id);
+      LItem.SubItems.Add(LTask.Title);
+      LItem.SubItems.Add(LTask.Description);
+      LItem.SubItems.Add(GetPriorityStr(LTask.Priority));
+      LItem.SubItems.Add(FormatApiDateTime(LTask.CreatedAt));
+      LItem.SubItems.Add(FormatApiDateTime(LTask.CompletedAt));
       LItem.Checked := (LTask.Status = 1);
     end;
   finally
@@ -176,6 +155,7 @@ begin
   except
     on E: EApiException do
       MessageDlg('Erro ao comunicar com a API: ' + E.Message, mtError, [mbOK], 0);
+
     on E: Exception do
       MessageDlg('Erro inesperado: ' + E.Message, mtError, [mbOK], 0);
   end;
@@ -188,12 +168,32 @@ end;
 
 procedure TfrmMain.btnCreateClick(Sender: TObject);
 begin
-  // Task 2.3
+  if FController.ShowCreateDialog(Self) then
+    RefreshAll;
 end;
 
 procedure TfrmMain.btnDeleteClick(Sender: TObject);
+var
+  LId: Integer;
 begin
-  // Task 2.5
+  if lvTasks.Selected = nil then
+  begin
+    MessageDlg('Selecione uma tarefa para excluir.', mtWarning, [mbOK], 0);
+    Exit;
+  end;
+
+  LId := Integer(lvTasks.Selected.Data);
+
+  if MessageDlg('Deseja realmente excluir esta tarefa?', mtConfirmation, [mbYes, mbNo], 0) = mrNo then
+    Exit;
+
+  try
+    FController.DeleteTask(LId);
+    RefreshAll;
+  except
+    on E: Exception do
+      MessageDlg(E.Message, mtError, [mbOK], 0);
+  end;
 end;
 
 procedure TfrmMain.lvTasksDblClick(Sender: TObject);
@@ -202,28 +202,52 @@ var
 begin
   LItem := lvTasks.Selected;
   if Assigned(LItem) then
-    LItem.Checked := not LItem.Checked; // triggers OnItemChecked
+    LItem.Checked := not LItem.Checked; //OnItemChecked
 end;
 
 procedure TfrmMain.lvTasksItemChecked(Sender: TObject; Item: TListItem);
 var
   LId, LNewStatus: Integer;
 begin
-  if FUpdatingList or not Assigned(Item.Data) then
+  if FUpdatingList then
     Exit;
 
-  LId := PInteger(Item.Data)^;
-  LNewStatus := Ord(Item.Checked); // True=1 (conclu√≠da), False=0 (pendente)
+  LId := Integer(Item.Data);
+  LNewStatus := Ord(Item.Checked);
 
   try
     FController.UpdateStatus(LId, LNewStatus);
+
+    if LNewStatus = 1 then
+      Item.SubItems[4] := FormatDateTime('dd/mm/yyyy HH:mm', Now)
+    else
+      Item.SubItems[4] := '-';
+    LoadStats;
   except
-    on E: EApiException do
-      MessageDlg('Erro ao atualizar status: ' + E.Message, mtError, [mbOK], 0);
     on E: Exception do
-      MessageDlg('Erro inesperado: ' + E.Message, mtError, [mbOK], 0);
+    begin
+      FUpdatingList := True;
+      try
+        Item.Checked := not Item.Checked;
+      finally
+        FUpdatingList := False;
+      end;
+      MessageDlg(E.Message, mtError, [mbOK], 0);
+    end;
   end;
 end;
+
+function TfrmMain.GetPriorityStr(APriority: Integer): string;
+begin
+  case APriority of
+    1: Result := 'Baixa';
+    2: Result := 'MÈdia';
+    3: Result := 'Alta';
+  else
+    Result := APriority.ToString;
+  end;
+end;
+
 
 procedure TfrmMain.lvTasksCustomDrawSubItem(Sender: TCustomListView;
   Item: TListItem; SubItem: Integer; State: TCustomDrawState;
@@ -232,7 +256,9 @@ var
   LIndex: Integer;
 begin
   DefaultDraw := True;
-  if SubItem <> 2 then // SubItems[2] = Priority (0=Title, 1=Desc, 2=Priority ...)
+  Sender.Canvas.Font.Color := clWindowText;
+
+  if SubItem > 2 then
     Exit;
 
   LIndex := Item.Index;
@@ -241,7 +267,7 @@ begin
 
   case FTasks[LIndex].Priority of
     1: Sender.Canvas.Font.Color := clGreen;
-    2: Sender.Canvas.Font.Color := $000080FF; // orange
+    2: Sender.Canvas.Font.Color := $000080FF;
     3: Sender.Canvas.Font.Color := clRed;
   end;
 end;
