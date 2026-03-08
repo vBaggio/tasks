@@ -20,6 +20,7 @@ Visão macro dos diretórios e módulos do ecossistema:
  ┃ ┃ ┣ 📂 model      (Entidades do Banco e Objects de Transferência DTO)
  ┃ ┃ ┣ 📂 repository (Implementações de DAL abstract-factory)
  ┃ ┃ ┗ 📂 service    (Regras de negócio e Injeções transientes)
+ ┃ ┣ 📂 tests       (Projeto de Testes Unitários via DUnitX)
  ┃ ┗ 📜 TasksAPI.dpr
  ┣ 📂 frontend
  ┃ ┣ 📂 bin         (Executável VCL e TasksClient.ini)
@@ -29,7 +30,6 @@ Visão macro dos diretórios e módulos do ecossistema:
  ┃ ┃ ┣ 📂 model      (DTOs, Requests p/ API e background de UI)
  ┃ ┃ ┗ 📂 view       (Formulários, Frames e Componentes visuais)
  ┃ ┗ 📜 TasksClient.dpr
- ┣ 📂 tests          (Projeto de Testes Unitários via DUnitX)
  ┣ 📜 docker-compose.yml
  ┗ 📜 README.md
 ```
@@ -42,6 +42,9 @@ Construído utilizando o clássico padrão de **Arquitetura em 3 Camadas (3-Tier
 
 **Alta Concorrência e Escalabilidade:** 
 A API foi projetada para processar múltiplas requisições simultâneas sem bloqueios (*Thread Locks*). Para isso, foi implementado um ciclo de vida transiente nas injeções de dependências (*Transient DI*): cada requisição HTTP aciona Fábricas que instanciam seus próprios Serviços e Repositórios, obtendo uma conexão isolada com o MSSQL através do **Connection Pooling nativo do FireDAC**. Essa arquitetura isola o tráfego, elimina gargalos de concorrência e garante estabilidade.
+
+**Testes Unitários (DUnitX):**
+O backend conta com testes unitários desenvolvidos com o framework nativo **DUnitX** e biblioteca externa [Delphi Mocks](https://github.com/VSoftTechnologies/Delphi-Mocks). Devido à restrição de tempo máximo de entrega, a cobertura priorizou apenas a regra de negócio central da aplicação: o **`TaskService`**. A arquitetura do projeto baseada em *Interfaces* facilitou a criação de testes robustos que não dependem do banco de dados. Os repositórios irreais (*Mocks*) foram injetados simulando o comportamento do MSSQL, o projeto de testes está localizado no diretório `/backend/tests`. 
 
 ### Frontend (VCL)
 Desenvolvido focado na reatividade e experiência do usuário (UX):
@@ -76,6 +79,7 @@ A aplicação foi desenvolvida no **Delphi 10.3 Rio**. No desenvolvimento, foi u
 As seguintes dependências externas foram utilizadas na aplicação:
 - [Horse](https://github.com/HashLoad/horse) - Framework web extremamento rápido para criar APIs REST em Delphi.
 - [Horse Basic Auth](https://github.com/HashLoad/horse-basic-auth) - Middleware para proteção das rotas contra acessos não autorizados.
+- [Horse Exception](https://github.com/HashLoad/horse-exception) - Middleware global adotado no projeto para centralizar, catalogar e padronizar o payload de erros HTTP (`Status 500, 404, 401...`) lançados pelas APIs (*Exceptions* do código).
 - [Neon](https://github.com/paolo-rossi/delphi-neon) - Biblioteca de serialização em JSON com suporte a records.
 
 ### Dependências Frontend
@@ -126,4 +130,5 @@ A camada de **Autenticação (Auth Service)** do Backend já foi construída e a
 - **Usuário:** `admin`
 - **Senha:** `123456`
 
-> O banco de credenciais do Frontend já vem pré-configurado com estes dados padrão através do arquivo `TasksClient.ini`. Você pode testar falhas de comunicação prepositalmente alterando a senha diretamente lá e observando o comportamento da aplicação ao receber o *Status 401 Unauthorized*.
+> [!NOTE]
+> O Frontend já vem pré-configurado as credenciais padrão através do arquivo `TasksClient.ini`. É possível provocar falhas de autenticação propositalmente alterando a senha diretamente lá e observando o comportamento da aplicação ao receber o *Status 401 Unauthorized*.
