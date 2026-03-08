@@ -30,8 +30,6 @@ object frmMain: TfrmMain
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 820
-    ExplicitHeight = 540
     object pnlTop: TPanel
       Left = 0
       Top = 0
@@ -85,9 +83,6 @@ object frmMain: TfrmMain
       Padding.Right = 15
       Padding.Bottom = 5
       TabOrder = 1
-      ExplicitTop = 100
-      ExplicitWidth = 820
-      ExplicitHeight = 440
       object lvTasks: TListView
         Left = 15
         Top = 0
@@ -144,8 +139,6 @@ object frmMain: TfrmMain
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitTop = 408
-        ExplicitWidth = 731
         DesignSize = (
           754
           78)
@@ -196,7 +189,6 @@ object frmMain: TfrmMain
           Padding.Bottom = 6
           ParentBackground = False
           TabOrder = 3
-          ExplicitWidth = 731
           DesignSize = (
             754
             28)
@@ -230,7 +222,7 @@ object frmMain: TfrmMain
             Left = 324
             Top = 7
             Width = 103
-            Height = 20
+            Height = 15
             Anchors = [akLeft, akTop, akBottom]
             Caption = 'Conclu'#237'das (7 dias):'
             Font.Charset = DEFAULT_CHARSET
@@ -239,13 +231,12 @@ object frmMain: TfrmMain
             Font.Name = 'Segoe UI'
             Font.Style = []
             ParentFont = False
-            ExplicitHeight = 15
           end
           object lblCompletedWeek: TLabel
             Left = 433
             Top = 7
             Width = 7
-            Height = 20
+            Height = 15
             Anchors = [akLeft, akTop, akBottom]
             Caption = '0'
             Font.Charset = DEFAULT_CHARSET
@@ -254,7 +245,6 @@ object frmMain: TfrmMain
             Font.Name = 'Segoe UI'
             Font.Style = [fsBold]
             ParentFont = False
-            ExplicitHeight = 15
           end
           object lblTotalTitle: TLabel
             Left = 0

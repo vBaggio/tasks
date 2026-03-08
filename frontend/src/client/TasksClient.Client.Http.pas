@@ -1,4 +1,4 @@
-unit TasksClient.Client.Http;
+Ôªøunit TasksClient.Client.Http;
 
 interface
 
@@ -74,7 +74,12 @@ begin
   LMessage := GetError(AResponseBody);
 
   case AStatusCode of
-    401: raise EApiUnauthorizedException.Create(LMessage);
+    401:
+      begin
+        if Trim(LMessage) = '' then
+          LMessage := 'Credenciais inv√°lidas. Verifique usu√°rio e senha.';
+        raise EApiUnauthorizedException.Create(LMessage);
+      end;
     404: raise EApiNotFoundException.Create(LMessage);
     422: raise EApiValidationException.Create(LMessage);
   else
@@ -84,7 +89,7 @@ end;
 
 procedure TTaskApiClient.RaiseConnectionError;
 begin
-  raise EApiConnectionException.Create('API indisponÌvel. Verifique se o servidor est· em execuÁ„o.' + #13#10);
+  raise EApiConnectionException.Create('API indispon√≠vel. Verifique se o servidor est√° em execu√ß√£o.' + #13#10);
 end;
 
 function TTaskApiClient.CreateRequest(const APath: string): IRequest;

@@ -1,4 +1,4 @@
-unit TasksClient.View.TaskCreate;
+ï»¿unit TasksClient.View.TaskCreate;
 
 interface
 
@@ -51,7 +51,7 @@ var
 begin
   if Trim(edtTitle.Text) = '' then
   begin
-    MessageDlg('O título é obrigatório.', mtWarning, [mbOK], 0);
+    MessageDlg('O tÃ­tulo Ã© obrigatÃ³rio.', mtWarning, [mbOK], 0);
     Exit;
   end;
 

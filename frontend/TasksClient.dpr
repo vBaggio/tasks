@@ -16,5 +16,6 @@ uses
 {$R *.res}
 
 begin
+  ReportMemoryLeaksOnShutdown := True;
   TAppStartup.Execute;
 end.

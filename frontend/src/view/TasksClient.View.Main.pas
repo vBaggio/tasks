@@ -1,4 +1,4 @@
-unit TasksClient.View.Main;
+﻿unit TasksClient.View.Main;
 
 interface
 
@@ -120,7 +120,6 @@ begin
     for I := 0 to High(FTasks) do
     begin
       LTask := FTasks[I];
-
       LItem := lvTasks.Items.Add;
       LItem.Caption := '';
       LItem.Data := Pointer(LTask.Id);
@@ -155,7 +154,6 @@ begin
   except
     on E: EApiException do
       MessageDlg('Erro ao comunicar com a API: ' + E.Message, mtError, [mbOK], 0);
-
     on E: Exception do
       MessageDlg('Erro inesperado: ' + E.Message, mtError, [mbOK], 0);
   end;
@@ -202,7 +200,7 @@ var
 begin
   LItem := lvTasks.Selected;
   if Assigned(LItem) then
-    LItem.Checked := not LItem.Checked; //OnItemChecked
+    LItem.Checked := not LItem.Checked;
 end;
 
 procedure TfrmMain.lvTasksItemChecked(Sender: TObject; Item: TListItem);
@@ -217,12 +215,10 @@ begin
 
   try
     FController.UpdateStatus(LId, LNewStatus);
-
     if LNewStatus = 1 then
       Item.SubItems[4] := FormatDateTime('dd/mm/yyyy HH:mm', Now)
     else
       Item.SubItems[4] := '-';
-    LoadStats;
   except
     on E: Exception do
     begin
@@ -233,7 +229,15 @@ begin
         FUpdatingList := False;
       end;
       MessageDlg(E.Message, mtError, [mbOK], 0);
+      Exit;
     end;
+  end;
+
+  try
+    LoadStats;
+  except
+    on E: Exception do
+      MessageDlg('Erro ao atualizar estatísticas: ' + E.Message, mtError, [mbOK], 0);
   end;
 end;
 
@@ -241,13 +245,12 @@ function TfrmMain.GetPriorityStr(APriority: Integer): string;
 begin
   case APriority of
     1: Result := 'Baixa';
-    2: Result := 'M�dia';
+    2: Result := 'Média';
     3: Result := 'Alta';
   else
     Result := APriority.ToString;
   end;
 end;
-
 
 procedure TfrmMain.lvTasksCustomDrawSubItem(Sender: TCustomListView;
   Item: TListItem; SubItem: Integer; State: TCustomDrawState;
