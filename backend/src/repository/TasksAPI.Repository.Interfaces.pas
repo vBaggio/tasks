@@ -23,10 +23,9 @@ type
 
   IUserRepository = interface
     ['{F1A2B3C4-D5E6-4789-ABCD-EF0123456789}']
-    function FindByUsername(const AUsername: string): TUserCredential;
+    function FindByUsername(const AUsername: string): TUserModel;
     function Exists(const AUsername: string): Boolean;
   end;
-  
 {$M-}
 
 implementation

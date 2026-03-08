@@ -3,17 +3,19 @@ unit TasksAPI.Repository.User;
 interface
 
 uses
+  System.Generics.Collections,
   TasksAPI.Model.Entity.User,
   TasksAPI.Repository.Interfaces;
 
 type
   TUserRepository = class(TInterfacedObject, IUserRepository)
   private
-    FUsers: array of TUserCredential;
+    FUsers: TObjectList<TUserModel>;
     procedure LoadUsers;
   public
     constructor Create;
-    function FindByUsername(const AUsername: string): TUserCredential;
+    destructor Destroy; override;
+    function FindByUsername(const AUsername: string): TUserModel;
     function Exists(const AUsername: string): Boolean;
   end;
 
@@ -27,39 +29,49 @@ uses
 constructor TUserRepository.Create;
 begin
   inherited Create;
+  FUsers := TObjectList<TUserModel>.Create(True);
   LoadUsers;
 end;
 
-procedure TUserRepository.LoadUsers;
+destructor TUserRepository.Destroy;
 begin
-  SetLength(FUsers, 1);
-  FUsers[0].Username := 'admin';
-  FUsers[0].Password := '123456';
+  FUsers.Free;
+  inherited;
 end;
 
-function TUserRepository.FindByUsername(const AUsername: string): TUserCredential;
+procedure TUserRepository.LoadUsers;
 var
-  I: Integer;
+  LUser: TUserModel;
 begin
-  for I := Low(FUsers) to High(FUsers) do
+  LUser := TUserModel.Create;
+  LUser.Username := 'admin';
+  LUser.Password := '123456';
+  FUsers.Add(LUser);
+end;
+
+function TUserRepository.FindByUsername(const AUsername: string): TUserModel;
+var
+  LUser: TUserModel;
+begin
+  for LUser in FUsers do
   begin
-    if SameText(FUsers[I].Username, AUsername) then
-      Exit(FUsers[I]);
+    if SameText(LUser.Username, AUsername) then
+      Exit(LUser);
   end;
 
-  Result := Default(TUserCredential);
+  Result := nil;
 end;
 
 function TUserRepository.Exists(const AUsername: string): Boolean;
 var
-  I: Integer;
+  LUser: TUserModel;
 begin
-  Result := False;
-  for I := Low(FUsers) to High(FUsers) do
+  for LUser in FUsers do
   begin
-    if SameText(FUsers[I].Username, AUsername) then
+    if SameText(LUser.Username, AUsername) then
       Exit(True);
   end;
+  Result := False;
 end;
 
 end.

@@ -69,7 +69,9 @@ begin
       LQuery.Open;
       Result := not LQuery.IsEmpty;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao verificar existência da tarefa.');
     end;
@@ -98,7 +100,9 @@ begin
         LQuery.Next;
       end;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao listar tarefas.');
     end;
@@ -125,7 +129,9 @@ begin
       if not LQuery.IsEmpty then
         Result := MapRow(LQuery);
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao buscar tarefa.');
     end;
@@ -159,7 +165,9 @@ begin
       LQuery.Open;
       Result := LQuery.FieldByName('id').AsInteger;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao inserir tarefa.');
     end;
@@ -186,7 +194,9 @@ begin
       LQuery.ParamByName('id').AsInteger := AId;
       LQuery.ExecSQL;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao atualizar status da tarefa.');
     end;
@@ -207,7 +217,9 @@ begin
       LQuery.ParamByName('id').AsInteger := AId;
       LQuery.ExecSQL;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao remover tarefa.');
     end;
@@ -235,7 +247,9 @@ begin
       Result.AveragePriorityPending := LQuery.FieldByName('avg_priority_pending').AsFloat;
       Result.CompletedLastSevenDays := LQuery.FieldByName('completed_last_7_days').AsInteger;
     except
-      on E: EDatabaseException do raise;
+      on E: EDatabaseException do
+        raise;
+
       on E: Exception do
         raise EDatabaseException.Create('Falha ao obter estatísticas.');
     end;

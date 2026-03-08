@@ -31,15 +31,16 @@ end;
 
 function TAuthService.Validate(const AUsername, APassword: string): Boolean;
 var
-  LCredential: TUserCredential;
+  LUser: TUserModel;
 begin
   Result := False;
 
   if not FUserRepository.Exists(AUsername) then
     Exit;
 
-  LCredential := FUserRepository.FindByUsername(AUsername);
-  Result := SameStr(LCredential.Password, APassword);
+  LUser := FUserRepository.FindByUsername(AUsername);
+  if Assigned(LUser) then
+    Result := SameStr(LUser.Password, APassword);
 end;
 
 end.
