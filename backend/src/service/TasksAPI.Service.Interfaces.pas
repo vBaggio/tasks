@@ -23,6 +23,12 @@ type
     function Validate(const AUsername, APassword: string): Boolean;
   end;
 
+  IServiceFactory = interface
+    ['{C0142A9B-20EE-4130-9ECA-2936220E15ED}']
+    function CreateTaskService: ITaskService;
+    function CreateAuthService: IAuthService;
+  end;
+
 implementation
 
 end.

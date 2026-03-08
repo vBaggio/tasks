@@ -26,6 +26,13 @@ type
     function FindByUsername(const AUsername: string): TUserModel;
     function Exists(const AUsername: string): Boolean;
   end;
+
+  IRepositoryFactory = interface
+    ['{B9414271-9B5A-4364-8CBA-43DA9C1CB85B}']
+    function CreateTaskRepository: ITaskRepository;
+    function CreateUserRepository: IUserRepository;
+  end;
+
 {$M-}
 
 implementation

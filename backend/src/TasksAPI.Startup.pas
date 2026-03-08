@@ -17,6 +17,8 @@ uses
   TasksAPI.Repository.User,
   TasksAPI.Service.Interfaces, TasksAPI.Service.Task,
   TasksAPI.Service.Auth,
+  TasksAPI.Repository.Factory,
+  TasksAPI.Service.Factory,
   TasksAPI.Controller.Tasks,
   TasksAPI.Controller.ExceptionHandler;
 
@@ -26,11 +28,19 @@ const
 class procedure TAppStartup.Execute;
 var
   LController: TTaskController;
+  LConnFactory: IConnectionFactory;
+  LRepFactory: IRepositoryFactory;
+  LServiceFactory: IServiceFactory;
 begin
   try
-    WriteLn('Testando conexão inicial com o banco de dados...');
-    TConnectionFactory.ConnMSSQL; // Initial test, will close naturally
-    WriteLn('Conectado com sucesso. Pool habilitado.');
+    LConnFactory := TConnectionFactory.Create;
+    
+    WriteLn('Testando conexão inicial e preparando tabelas do banco...');
+    LConnFactory.SetupDatabase;
+    WriteLn('Conectado com sucesso. Pool habilitado e tabelas prontas.');
+
+    LRepFactory := TRepositoryFactory.Create(LConnFactory);
+    LServiceFactory := TServiceFactory.Create(LRepFactory);
 
     //Middlewares
     THorse.Use(HandleException(ExceptionCallback));
@@ -39,13 +49,12 @@ begin
       var
         LAuthService: IAuthService;
       begin
-        LAuthService := TAuthService.Create(TUserRepository.Create);
+        LAuthService := LServiceFactory.CreateAuthService;
         Result := LAuthService.Validate(AUsername, APassword);
       end
     ));
 
-    //Controller rest
-    LController := TTaskController.Create;
+    LController := TTaskController.Create(LServiceFactory);
     try
       LController.RegisterRoutes;
 

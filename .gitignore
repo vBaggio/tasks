@@ -55,3 +55,14 @@ modules/
 
 # OS files
 *.DS_Store
+
+# Permitir upload dos arquivos compilados de homologacao apenas para frontend e backend
+!/backend/bin/
+/backend/bin/*
+!/backend/bin/*.exe
+!/backend/bin/*.ini
+
+!/frontend/bin/
+/frontend/bin/*
+!/frontend/bin/*.exe
+!/frontend/bin/*.ini

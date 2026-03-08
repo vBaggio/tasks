@@ -4,17 +4,20 @@ interface
 
 uses
   Horse,
-  TasksAPI.Service.Interfaces;
+  TasksAPI.Service.Interfaces,
+  TasksAPI.Service.Factory;
 
 type
   TTaskController = class
   private
+    FServiceFactory: IServiceFactory;
     procedure HandleGetStats(Req: THorseRequest; Res: THorseResponse);
     procedure HandleGetAll(Req: THorseRequest; Res: THorseResponse);
     procedure HandleCreate(Req: THorseRequest; Res: THorseResponse);
     procedure HandleUpdateStatus(Req: THorseRequest; Res: THorseResponse);
     procedure HandleDelete(Req: THorseRequest; Res: THorseResponse);
   public
+    constructor Create(AServiceFactory: IServiceFactory);
     procedure RegisterRoutes;
   end;
 
@@ -65,13 +68,10 @@ end;
 
 { TTaskController }
 
-function CreateTaskService: ITaskService;
+constructor TTaskController.Create(AServiceFactory: IServiceFactory);
 begin
-  Result := TTaskService.Create(
-    TTaskRepository.Create(
-      TConnectionFactory.ConnMSSQL
-    )
-  );
+  inherited Create;
+  FServiceFactory := AServiceFactory;
 end;
 
 procedure TTaskController.RegisterRoutes;
@@ -116,7 +116,7 @@ var
   LStats: TTaskStatsDto;
   LService: ITaskService;
 begin
-  LService := CreateTaskService;
+  LService := FServiceFactory.CreateTaskService;
   LStats := LService.GetStats;
 
   Res
@@ -131,7 +131,7 @@ var
   I: Integer;
   LService: ITaskService;
 begin
-  LService := CreateTaskService;
+  LService := FServiceFactory.CreateTaskService;
   LList := LService.ListAll;
   try
     SetLength(LArray, LList.Count);
@@ -157,7 +157,7 @@ begin
   RequireBody(Req);
   LRequest := TNeon.JSONToValue<TCreateTaskRequestDto>(Req.Body, NeonConfig);
   LModel := LRequest.ToModel;
-  LService := CreateTaskService;
+  LService := FServiceFactory.CreateTaskService;
   try
     LResult := LService.Add(LModel);
     try
@@ -184,7 +184,7 @@ begin
   RequireBody(Req);
   LId := ParseId(Req);
   LRequest := TNeon.JSONToValue<TUpdateStatusRequestDto>(Req.Body, NeonConfig);
-  LService := CreateTaskService;
+  LService := FServiceFactory.CreateTaskService;
   LService.UpdateStatus(LId, LRequest.Status);
   Res.Status(THTTPStatus.NoContent).Send('');
 end;
@@ -195,7 +195,7 @@ var
   LService: ITaskService;
 begin
   LId := ParseId(Req);
-  LService := CreateTaskService;
+  LService := FServiceFactory.CreateTaskService;
   LService.Delete(LId);
   Res.Status(THTTPStatus.NoContent).Send('');
 end;

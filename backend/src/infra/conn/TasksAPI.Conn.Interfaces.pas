@@ -19,6 +19,12 @@ type
     function GetConn: TFDConnection;
   end;
 
+  IConnectionFactory = interface
+    ['{0AB6F2A5-A672-4B28-8FD8-96BCBF305609}']
+    procedure SetupDatabase;
+    function CreateConnection: IConnection;
+  end;
+
 implementation
 
 end.
