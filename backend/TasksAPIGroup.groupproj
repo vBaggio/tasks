@@ -6,6 +6,9 @@
         <Projects Include="TasksAPI.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="tests\TasksAPITests.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="TasksAPI:Make">
         <MSBuild Projects="TasksAPI.dproj" Targets="Make"/>
     </Target>
+    <Target Name="TasksAPITests">
+        <MSBuild Projects="tests\TasksAPITests.dproj"/>
+    </Target>
+    <Target Name="TasksAPITests:Clean">
+        <MSBuild Projects="tests\TasksAPITests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TasksAPITests:Make">
+        <MSBuild Projects="tests\TasksAPITests.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="TasksAPI"/>
+        <CallTarget Targets="TasksAPI;TasksAPITests"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TasksAPI:Clean"/>
+        <CallTarget Targets="TasksAPI:Clean;TasksAPITests:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TasksAPI:Make"/>
+        <CallTarget Targets="TasksAPI:Make;TasksAPITests:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

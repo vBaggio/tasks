@@ -60,7 +60,7 @@
         <DCC_K>false</DCC_K>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>TasksAPI</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\handle-exception\src;..\modules\horse\src;..\modules\horse-basic-auth\src;..\modules\delphi-neon\Source;..\modules\jhonson\src;modules\.dcp;modules\.dcu;modules;modules\delphi-neon\Source;modules\handle-exception\src;modules\horse\src;modules\horse-basic-auth\src;modules\jhonson\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\handle-exception\src;..\modules\horse\src;..\modules\horse-basic-auth\src;..\modules\delphi-neon\Source;..\modules\jhonson\src;$(DCC_UnitSearchPath);..\modules\Delphi-Mocks\Examples;..\modules\Delphi-Mocks\Source;..\modules\Delphi-Mocks\Tests;..\modules\Delphi-Mocks\Tests\MemoryLeakTest;modules\.dcp;modules\.dcu;modules;modules\Delphi-Mocks\Examples;modules\Delphi-Mocks\Source;modules\Delphi-Mocks\Tests;modules\Delphi-Mocks\Tests\MemoryLeakTest;modules\delphi-neon\Source;modules\handle-exception\src;modules\horse\src;modules\horse-basic-auth\src;modules\jhonson\src</DCC_UnitSearchPath>
         <VerInfo_Locale>1046</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>

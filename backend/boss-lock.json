@@ -41,6 +41,14 @@
 			"artifacts": {},
 			"failed": false,
 			"changed": false
+		},
+		"https://github.com/vsofttechnologies/delphi-mocks": {
+			"name": "Delphi-Mocks",
+			"version": "master",
+			"hash": "54ed65a38ee9bb344548c75632788098",
+			"artifacts": {},
+			"failed": false,
+			"changed": false
 		}
 	}
 }

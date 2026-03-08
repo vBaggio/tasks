@@ -8,6 +8,7 @@ uses
   TasksAPI.Model.Entity.User,
   TasksAPI.Model.Dto.Stats;
 
+{$M+}
 type
   ITaskRepository = interface
     ['{A3F1C2E4-B5D6-4789-9ABC-DEF012345678}']
@@ -25,6 +26,8 @@ type
     function FindByUsername(const AUsername: string): TUserCredential;
     function Exists(const AUsername: string): Boolean;
   end;
+  
+{$M-}
 
 implementation
 
