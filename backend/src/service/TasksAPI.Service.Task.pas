@@ -8,12 +8,10 @@ uses
   TasksAPI.Repository.Interfaces,
   TasksAPI.Service.Interfaces,
   TasksAPI.Model.Entity.Task,
-  TasksAPI.Model.Dto.Stats;
+  TasksAPI.Model.Dto.Stats,
+  TasksAPI.Model.Exceptions;
 
 type
-  EValidationException = class(Exception);
-  ENotFoundException = class(Exception);
-
   TTaskService = class(TInterfacedObject, ITaskService)
   private
     FRepository: ITaskRepository;

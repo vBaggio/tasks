@@ -11,13 +11,14 @@ type
 implementation
 
 uses
-  System.SysUtils, Horse, Horse.BasicAuthentication,
+  System.SysUtils, Horse, Horse.HandleException, Horse.BasicAuthentication,
   TasksAPI.Conn.Interfaces, TasksAPI.Conn.Factory,
   TasksAPI.Repository.Interfaces, TasksAPI.Repository.Task,
   TasksAPI.Repository.User,
   TasksAPI.Service.Interfaces, TasksAPI.Service.Task,
   TasksAPI.Service.Auth,
-  TasksAPI.Controller.Tasks;
+  TasksAPI.Controller.Tasks,
+  TasksAPI.Controller.ExceptionHandler;
 
 const
   PORT = 9000;
@@ -39,7 +40,8 @@ begin
     LUserRepository := TUserRepository.Create;
     LAuthService := TAuthService.Create(LUserRepository);
 
-    //Middleware de autenticação
+    //Middlewares
+    THorse.Use(HandleException(ExceptionCallback));
     THorse.Use(HorseBasicAuthentication(
       function(const AUsername, APassword: string): Boolean
       begin
@@ -61,6 +63,7 @@ begin
     finally
       LController.Free;
     end;
+
   except
     on E: Exception do
     begin

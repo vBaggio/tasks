@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E104E831-E6FB-4902-A9AD-5FC6F3330F1F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="TasksAPI.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TasksAPI">
+        <MSBuild Projects="TasksAPI.dproj"/>
+    </Target>
+    <Target Name="TasksAPI:Clean">
+        <MSBuild Projects="TasksAPI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TasksAPI:Make">
+        <MSBuild Projects="TasksAPI.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TasksAPI"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TasksAPI:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TasksAPI:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

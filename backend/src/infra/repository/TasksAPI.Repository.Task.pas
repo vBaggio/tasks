@@ -1,4 +1,4 @@
-unit TasksAPI.Repository.Task;
+﻿unit TasksAPI.Repository.Task;
 
 interface
 
@@ -32,7 +32,8 @@ implementation
 uses
   System.SysUtils,
   Data.Db,
-  FireDAC.Stan.Param;
+  FireDAC.Stan.Param,
+  TasksAPI.Model.Exceptions;
 
 { TTaskRepository }
 
@@ -61,11 +62,17 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    LQuery.SQL.Text := 'SELECT 1 FROM tasks WHERE id = :id';
-    LQuery.ParamByName('id').AsInteger := AId;
-    LQuery.Open;
-    Result := not LQuery.IsEmpty;
+    try
+      LQuery.Connection := FConnection.GetConn;
+      LQuery.SQL.Text := 'SELECT 1 FROM tasks WHERE id = :id';
+      LQuery.ParamByName('id').AsInteger := AId;
+      LQuery.Open;
+      Result := not LQuery.IsEmpty;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao verificar existência da tarefa.');
+    end;
   finally
     LQuery.Free;
   end;
@@ -78,16 +85,22 @@ begin
   Result := TObjectList<TTaskModel>.Create(True);
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    LQuery.SQL.Text :=
-      'SELECT id, title, description, status, priority, created_at, completed_at ' +
-      'FROM tasks ' +
-      'ORDER BY created_at DESC';
-    LQuery.Open;
-    while not LQuery.Eof do
-    begin
-      Result.Add(MapRow(LQuery));
-      LQuery.Next;
+    try
+      LQuery.Connection := FConnection.GetConn;
+      LQuery.SQL.Text :=
+        'SELECT id, title, description, status, priority, created_at, completed_at ' +
+        'FROM tasks ' +
+        'ORDER BY created_at DESC';
+      LQuery.Open;
+      while not LQuery.Eof do
+      begin
+        Result.Add(MapRow(LQuery));
+        LQuery.Next;
+      end;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao listar tarefas.');
     end;
   finally
     LQuery.Free;
@@ -101,15 +114,21 @@ begin
   Result := nil;
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    LQuery.SQL.Text :=
-      'SELECT id, title, description, status, priority, created_at, completed_at ' +
-      'FROM tasks ' +
-      'WHERE id = :id';
-    LQuery.ParamByName('id').AsInteger := AId;
-    LQuery.Open;
-    if not LQuery.IsEmpty then
-      Result := MapRow(LQuery);
+    try
+      LQuery.Connection := FConnection.GetConn;
+      LQuery.SQL.Text :=
+        'SELECT id, title, description, status, priority, created_at, completed_at ' +
+        'FROM tasks ' +
+        'WHERE id = :id';
+      LQuery.ParamByName('id').AsInteger := AId;
+      LQuery.Open;
+      if not LQuery.IsEmpty then
+        Result := MapRow(LQuery);
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao buscar tarefa.');
+    end;
   finally
     LQuery.Free;
   end;
@@ -121,23 +140,29 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    LQuery.SQL.Text :=
-      'INSERT INTO tasks (title, description, status, priority) ' +
-      'OUTPUT INSERTED.id ' +
-      'VALUES (:title, :description, :status, :priority)';
-    LQuery.ParamByName('title').AsString := ATask.Title;
-    if ATask.Description <> '' then
-      LQuery.ParamByName('description').AsString := ATask.Description
-    else
-    begin
-      LQuery.ParamByName('description').DataType := ftString;
-      LQuery.ParamByName('description').Clear;
+    try
+      LQuery.Connection := FConnection.GetConn;
+      LQuery.SQL.Text :=
+        'INSERT INTO tasks (title, description, status, priority) ' +
+        'OUTPUT INSERTED.id ' +
+        'VALUES (:title, :description, :status, :priority)';
+      LQuery.ParamByName('title').AsString := ATask.Title;
+      if ATask.Description <> '' then
+        LQuery.ParamByName('description').AsString := ATask.Description
+      else
+      begin
+        LQuery.ParamByName('description').DataType := ftString;
+        LQuery.ParamByName('description').Clear;
+      end;
+      LQuery.ParamByName('status').AsInteger := ATask.Status;
+      LQuery.ParamByName('priority').AsInteger := ATask.Priority;
+      LQuery.Open;
+      Result := LQuery.FieldByName('id').AsInteger;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao inserir tarefa.');
     end;
-    LQuery.ParamByName('status').AsInteger := ATask.Status;
-    LQuery.ParamByName('priority').AsInteger := ATask.Priority;
-    LQuery.Open;
-    Result := LQuery.FieldByName('id').AsInteger;
   finally
     LQuery.Free;
   end;
@@ -149,16 +174,22 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    if AStatus = Ord(tsCompleted) then
-      LQuery.SQL.Text :=
-        'UPDATE tasks SET status = :status, completed_at = GETDATE() WHERE id = :id'
-    else
-      LQuery.SQL.Text :=
-        'UPDATE tasks SET status = :status, completed_at = NULL WHERE id = :id';
-    LQuery.ParamByName('status').AsInteger := AStatus;
-    LQuery.ParamByName('id').AsInteger := AId;
-    LQuery.ExecSQL;
+    try
+      LQuery.Connection := FConnection.GetConn;
+      if AStatus = Ord(tsCompleted) then
+        LQuery.SQL.Text :=
+          'UPDATE tasks SET status = :status, completed_at = GETDATE() WHERE id = :id'
+      else
+        LQuery.SQL.Text :=
+          'UPDATE tasks SET status = :status, completed_at = NULL WHERE id = :id';
+      LQuery.ParamByName('status').AsInteger := AStatus;
+      LQuery.ParamByName('id').AsInteger := AId;
+      LQuery.ExecSQL;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao atualizar status da tarefa.');
+    end;
   finally
     LQuery.Free;
   end;
@@ -170,10 +201,16 @@ var
 begin
   LQuery := TFDQuery.Create(nil);
   try
-    LQuery.Connection := FConnection.GetConn;
-    LQuery.SQL.Text := 'DELETE FROM tasks WHERE id = :id';
-    LQuery.ParamByName('id').AsInteger := AId;
-    LQuery.ExecSQL;
+    try
+      LQuery.Connection := FConnection.GetConn;
+      LQuery.SQL.Text := 'DELETE FROM tasks WHERE id = :id';
+      LQuery.ParamByName('id').AsInteger := AId;
+      LQuery.ExecSQL;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao remover tarefa.');
+    end;
   finally
     LQuery.Free;
   end;
@@ -192,10 +229,16 @@ begin
       '  (SELECT AVG(CAST(priority AS FLOAT)) FROM tasks WHERE status = 0) AS avg_priority_pending, ' +
       '  (SELECT COUNT(*) FROM tasks WHERE status = 1 ' +
       '    AND completed_at >= DATEADD(DAY, -7, GETDATE())) AS completed_last_7_days';
-    LQuery.Open;
-    Result.TotalCount := LQuery.FieldByName('total_count').AsInteger;
-    Result.AveragePriorityPending := LQuery.FieldByName('avg_priority_pending').AsFloat;
-    Result.CompletedLastSevenDays := LQuery.FieldByName('completed_last_7_days').AsInteger;
+    try
+      LQuery.Open;
+      Result.TotalCount := LQuery.FieldByName('total_count').AsInteger;
+      Result.AveragePriorityPending := LQuery.FieldByName('avg_priority_pending').AsFloat;
+      Result.CompletedLastSevenDays := LQuery.FieldByName('completed_last_7_days').AsInteger;
+    except
+      on E: EDatabaseException do raise;
+      on E: Exception do
+        raise EDatabaseException.Create('Falha ao obter estatísticas.');
+    end;
   finally
     LQuery.Free;
   end;

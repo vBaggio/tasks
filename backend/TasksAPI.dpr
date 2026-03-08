@@ -23,7 +23,9 @@ uses
   TasksAPI.Service.Task in 'src\service\TasksAPI.Service.Task.pas',
   TasksAPI.Service.Auth in 'src\service\TasksAPI.Service.Auth.pas',
   TasksAPI.Model.Entity.User in 'src\model\entity\TasksAPI.Model.Entity.User.pas',
-  TasksAPI.Repository.User in 'src\infra\repository\TasksAPI.Repository.User.pas';
+  TasksAPI.Model.Exceptions in 'src\model\TasksAPI.Model.Exceptions.pas',
+  TasksAPI.Repository.User in 'src\infra\repository\TasksAPI.Repository.User.pas',
+  TasksAPI.Controller.ExceptionHandler in 'src\controller\TasksAPI.Controller.ExceptionHandler.pas';
 
 begin
   TAppStartup.Execute;

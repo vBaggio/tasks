@@ -34,7 +34,7 @@ uses
   TasksAPI.Model.Entity.Task,
   TasksAPI.Model.Dto.Task,
   TasksAPI.Model.Dto.Stats,
-  TasksAPI.Service.Task;
+  TasksAPI.Model.Exceptions;
 
 function NeonConfig: INeonConfiguration;
 begin
@@ -145,32 +145,23 @@ var
   LResult: TTaskModel;
   LResponse: TTaskResponseDto;
 begin
+  RequireBody(Req);
+  LRequest := TNeon.JSONToValue<TCreateTaskRequestDto>(Req.Body, NeonConfig);
+  LModel := LRequest.ToModel;
   try
-    RequireBody(Req);
-    LRequest := TNeon.JSONToValue<TCreateTaskRequestDto>(Req.Body, NeonConfig);
-    LModel := LRequest.ToModel;
+    LResult := FService.Add(LModel);
     try
-      LResult := FService.Add(LModel);
-      try
-        LResponse := TTaskResponseDto.FromModel(LResult);
+      LResponse := TTaskResponseDto.FromModel(LResult);
 
-        Res
-          .ContentType('application/json')
-          .Status(THTTPStatus.Created)
-          .Send(TNeon.ValueToJSONString(TValue.From<TTaskResponseDto>(LResponse), NeonConfig));
-      finally
-        LResult.Free;
-      end;
+      Res
+        .ContentType('application/json')
+        .Status(THTTPStatus.Created)
+        .Send(TNeon.ValueToJSONString(TValue.From<TTaskResponseDto>(LResponse), NeonConfig));
     finally
-      LModel.Free;
+      LResult.Free;
     end;
-  except
-    on E: EHorseException do
-      raise;
-    on E: EValidationException do
-      raise EHorseException.New
-        .Error(E.Message)
-        .Status(THTTPStatus.UnprocessableEntity);
+  finally
+    LModel.Free;
   end;
 end;
 
@@ -179,42 +170,20 @@ var
   LId: Integer;
   LRequest: TUpdateStatusRequestDto;
 begin
-  try
-    RequireBody(Req);
-    LId := ParseId(Req);
-    LRequest := TNeon.JSONToValue<TUpdateStatusRequestDto>(Req.Body, NeonConfig);
-    FService.UpdateStatus(LId, LRequest.Status);
-    Res.Status(THTTPStatus.NoContent).Send('');
-  except
-    on E: EHorseException do
-      raise;
-    on E: ENotFoundException do
-      raise EHorseException.New
-        .Error(E.Message)
-        .Status(THTTPStatus.NotFound);
-    on E: EValidationException do
-      raise EHorseException.New
-        .Error(E.Message)
-        .Status(THTTPStatus.UnprocessableEntity);
-  end;
+  RequireBody(Req);
+  LId := ParseId(Req);
+  LRequest := TNeon.JSONToValue<TUpdateStatusRequestDto>(Req.Body, NeonConfig);
+  FService.UpdateStatus(LId, LRequest.Status);
+  Res.Status(THTTPStatus.NoContent).Send('');
 end;
 
 procedure TTaskController.HandleDelete(Req: THorseRequest; Res: THorseResponse);
 var
   LId: Integer;
 begin
-  try
-    LId := ParseId(Req);
-    FService.Delete(LId);
-    Res.Status(THTTPStatus.NoContent).Send('');
-  except
-    on E: EHorseException do
-      raise;
-    on E: ENotFoundException do
-      raise EHorseException.New
-        .Error(E.Message)
-        .Status(THTTPStatus.NotFound);
-  end;
+  LId := ParseId(Req);
+  FService.Delete(LId);
+  Res.Status(THTTPStatus.NoContent).Send('');
 end;
 
 end.
