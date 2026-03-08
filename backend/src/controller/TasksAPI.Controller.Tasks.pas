@@ -9,14 +9,12 @@ uses
 type
   TTaskController = class
   private
-    FService: ITaskService;
     procedure HandleGetStats(Req: THorseRequest; Res: THorseResponse);
     procedure HandleGetAll(Req: THorseRequest; Res: THorseResponse);
     procedure HandleCreate(Req: THorseRequest; Res: THorseResponse);
     procedure HandleUpdateStatus(Req: THorseRequest; Res: THorseResponse);
     procedure HandleDelete(Req: THorseRequest; Res: THorseResponse);
   public
-    constructor Create(AService: ITaskService);
     procedure RegisterRoutes;
   end;
 
@@ -34,7 +32,10 @@ uses
   TasksAPI.Model.Entity.Task,
   TasksAPI.Model.Dto.Task,
   TasksAPI.Model.Dto.Stats,
-  TasksAPI.Model.Exceptions;
+  TasksAPI.Model.Exceptions,
+  TasksAPI.Conn.Factory,
+  TasksAPI.Repository.Task,
+  TasksAPI.Service.Task;
 
 function NeonConfig: INeonConfiguration;
 begin
@@ -64,10 +65,13 @@ end;
 
 { TTaskController }
 
-constructor TTaskController.Create(AService: ITaskService);
+function CreateTaskService: ITaskService;
 begin
-  inherited Create;
-  FService := AService;
+  Result := TTaskService.Create(
+    TTaskRepository.Create(
+      TConnectionFactory.ConnMSSQL
+    )
+  );
 end;
 
 procedure TTaskController.RegisterRoutes;
@@ -110,8 +114,10 @@ end;
 procedure TTaskController.HandleGetStats(Req: THorseRequest; Res: THorseResponse);
 var
   LStats: TTaskStatsDto;
+  LService: ITaskService;
 begin
-  LStats := FService.GetStats;
+  LService := CreateTaskService;
+  LStats := LService.GetStats;
 
   Res
     .ContentType('application/json')
@@ -123,8 +129,10 @@ var
   LList: TObjectList<TTaskModel>;
   LArray: TArray<TTaskResponseDto>;
   I: Integer;
+  LService: ITaskService;
 begin
-  LList := FService.ListAll;
+  LService := CreateTaskService;
+  LList := LService.ListAll;
   try
     SetLength(LArray, LList.Count);
     for I := 0 to LList.Count - 1 do
@@ -144,12 +152,14 @@ var
   LModel: TTaskModel;
   LResult: TTaskModel;
   LResponse: TTaskResponseDto;
+  LService: ITaskService;
 begin
   RequireBody(Req);
   LRequest := TNeon.JSONToValue<TCreateTaskRequestDto>(Req.Body, NeonConfig);
   LModel := LRequest.ToModel;
+  LService := CreateTaskService;
   try
-    LResult := FService.Add(LModel);
+    LResult := LService.Add(LModel);
     try
       LResponse := TTaskResponseDto.FromModel(LResult);
 
@@ -169,20 +179,24 @@ procedure TTaskController.HandleUpdateStatus(Req: THorseRequest; Res: THorseResp
 var
   LId: Integer;
   LRequest: TUpdateStatusRequestDto;
+  LService: ITaskService;
 begin
   RequireBody(Req);
   LId := ParseId(Req);
   LRequest := TNeon.JSONToValue<TUpdateStatusRequestDto>(Req.Body, NeonConfig);
-  FService.UpdateStatus(LId, LRequest.Status);
+  LService := CreateTaskService;
+  LService.UpdateStatus(LId, LRequest.Status);
   Res.Status(THTTPStatus.NoContent).Send('');
 end;
 
 procedure TTaskController.HandleDelete(Req: THorseRequest; Res: THorseResponse);
 var
   LId: Integer;
+  LService: ITaskService;
 begin
   LId := ParseId(Req);
-  FService.Delete(LId);
+  LService := CreateTaskService;
+  LService.Delete(LId);
   Res.Status(THTTPStatus.NoContent).Send('');
 end;
 

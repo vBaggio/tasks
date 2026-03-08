@@ -28,17 +28,19 @@ begin
   LSetupConfig := AConfig;
   LSetupConfig.Database := '';
   try
-    LSetupConn := TConnectionMSSQL.Create(LSetupConfig);
+    // Passando APooled=False para nao registrar no Pool
+    LSetupConn := TConnectionMSSQL.Create(LSetupConfig, False);
     LSetupConn.GetConn.ExecSQL(
       'IF DB_ID(N''' + LDatabase + ''') IS NULL ' +
       'BEGIN EXEC(''CREATE DATABASE [' + LDatabase + ']'') END'
     );
   except
     on E: Exception do
-      WriteLn('Aviso: não foi possível verificar/criar o banco "' + LDatabase + '": ' + E.Message);
+      WriteLn('Aviso: n'+#227+'o foi possivel verificar/criar o banco "' + LDatabase + '": ' + E.Message);
   end;
 
-  LAppConn := TConnectionMSSQL.Create(AConfig);
+  // Passando APooled=False para nao registrar no Pool na criacao de tabelas
+  LAppConn := TConnectionMSSQL.Create(AConfig, False);
   LAppConn.GetConn.ExecSQL(
     'IF OBJECT_ID(N''dbo.tasks'', N''U'') IS NULL ' +
     'BEGIN ' +

@@ -44,7 +44,6 @@ object frmMain: TfrmMain
       Padding.Bottom = 5
       ParentBackground = False
       TabOrder = 0
-      ExplicitWidth = 761
       object lblTitle: TLabel
         AlignWithMargins = True
         Left = 15
@@ -129,7 +128,6 @@ object frmMain: TfrmMain
         OnCustomDrawSubItem = lvTasksCustomDrawSubItem
         OnDblClick = lvTasksDblClick
         OnItemChecked = lvTasksItemChecked
-        ExplicitWidth = 758
       end
       object pnlButtons: TPanel
         Left = 15
@@ -151,7 +149,6 @@ object frmMain: TfrmMain
           Caption = 'Nova Tarefa'
           TabOrder = 0
           OnClick = btnCreateClick
-          ExplicitTop = 51
         end
         object btnDelete: TBitBtn
           Left = 126
@@ -162,7 +159,6 @@ object frmMain: TfrmMain
           Caption = 'Excluir'
           TabOrder = 1
           OnClick = btnDeleteClick
-          ExplicitTop = 51
         end
         object btnRefresh: TBitBtn
           Left = 631
@@ -173,8 +169,6 @@ object frmMain: TfrmMain
           Caption = 'Atualizar'
           TabOrder = 2
           OnClick = btnRefreshClick
-          ExplicitLeft = 608
-          ExplicitTop = 51
         end
         object pnlStats: TPanel
           Left = 0

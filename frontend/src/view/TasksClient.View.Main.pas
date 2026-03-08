@@ -47,10 +47,9 @@ type
     FUpdatingList: Boolean;
     procedure LoadTasks;
     procedure LoadStats;
+    procedure LoadStatsAsync;
     procedure RefreshAll;
     procedure ClearListData;
-    function GetPriorityStr(APriority: Integer): string;
-    function FormatApiDateTime(const AValue: string): string;
   public
     procedure SetController(AController: TTaskController);
   end;
@@ -76,23 +75,6 @@ end;
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
   RefreshAll;
-end;
-
-function TfrmMain.FormatApiDateTime(const AValue: string): string;
-var
-  LDt: TDateTime;
-begin
-  if AValue = '' then
-  begin
-    Result := '-';
-    Exit;
-  end;
-  try
-    LDt := ISO8601ToDate(AValue, False);
-    Result := FormatDateTime('dd/mm/yyyy HH:mm', LDt);
-  except
-    Result := AValue;
-  end;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
@@ -125,9 +107,9 @@ begin
       LItem.Data := Pointer(LTask.Id);
       LItem.SubItems.Add(LTask.Title);
       LItem.SubItems.Add(LTask.Description);
-      LItem.SubItems.Add(GetPriorityStr(LTask.Priority));
-      LItem.SubItems.Add(FormatApiDateTime(LTask.CreatedAt));
-      LItem.SubItems.Add(FormatApiDateTime(LTask.CompletedAt));
+      LItem.SubItems.Add(LTask.PriorityAsString);
+      LItem.SubItems.Add(LTask.CreatedAtFormatted);
+      LItem.SubItems.Add(LTask.CompletedAtFormatted);
       LItem.Checked := (LTask.Status = 1);
     end;
   finally
@@ -144,6 +126,22 @@ begin
   lblTotalCount.Caption    := LStats.TotalCount.ToString;
   lblAvgPriority.Caption   := FormatFloat('0.0', LStats.AveragePriorityPending);
   lblCompletedWeek.Caption := LStats.CompletedLastSevenDays.ToString;
+end;
+
+procedure TfrmMain.LoadStatsAsync;
+begin
+  FController.GetStatsAsync(
+    procedure(AStats: TTaskStatsDto)
+    begin
+      lblTotalCount.Caption    := AStats.TotalCount.ToString;
+      lblAvgPriority.Caption   := FormatFloat('0.0', AStats.AveragePriorityPending);
+      lblCompletedWeek.Caption := AStats.CompletedLastSevenDays.ToString;
+    end,
+    procedure(AError: string)
+    begin
+      // Opcional: tratar erro ou logar para o console
+    end
+  );
 end;
 
 procedure TfrmMain.RefreshAll;
@@ -200,56 +198,75 @@ var
 begin
   LItem := lvTasks.Selected;
   if Assigned(LItem) then
-    LItem.Checked := not LItem.Checked;
+    LItem.Checked := not LItem.Checked; //Trigger OnItemChecked
 end;
 
 procedure TfrmMain.lvTasksItemChecked(Sender: TObject; Item: TListItem);
 var
   LId, LNewStatus: Integer;
 begin
+  Sleep(100);
   if FUpdatingList then
     Exit;
 
   LId := Integer(Item.Data);
   LNewStatus := Ord(Item.Checked);
 
-  try
-    FController.UpdateStatus(LId, LNewStatus);
-    if LNewStatus = 1 then
-      Item.SubItems[4] := FormatDateTime('dd/mm/yyyy HH:mm', Now)
-    else
-      Item.SubItems[4] := '-';
-  except
-    on E: Exception do
+  FController.UpdateStatusAsync(LId, LNewStatus,
+    procedure // OnSuccess
+    var
+      I: Integer;
+      LCurrentItem: TListItem;
     begin
-      FUpdatingList := True;
-      try
-        Item.Checked := not Item.Checked;
-      finally
-        FUpdatingList := False;
+      // TThread.Queue is handled inside the controller, so UI updates are safe here.
+      LCurrentItem := nil;
+      for I := 0 to lvTasks.Items.Count - 1 do
+      begin
+        if Integer(lvTasks.Items[I].Data) = LId then
+        begin
+          LCurrentItem := lvTasks.Items[I];
+          Break;
+        end;
       end;
-      MessageDlg(E.Message, mtError, [mbOK], 0);
-      Exit;
-    end;
-  end;
 
-  try
-    LoadStats;
-  except
-    on E: Exception do
-      MessageDlg('Erro ao atualizar estatísticas: ' + E.Message, mtError, [mbOK], 0);
-  end;
-end;
+      if Assigned(LCurrentItem) then
+      begin
+        if LNewStatus = 1 then
+          LCurrentItem.SubItems[4] := FormatDateTime('dd/mm/yyyy HH:mm', Now)
+        else
+          LCurrentItem.SubItems[4] := '-';
+      end;
+      LoadStatsAsync;
+    end,
 
-function TfrmMain.GetPriorityStr(APriority: Integer): string;
-begin
-  case APriority of
-    1: Result := 'Baixa';
-    2: Result := 'Média';
-    3: Result := 'Alta';
-  else
-    Result := APriority.ToString;
-  end;
+    procedure(AError: string) // OnError
+    var
+      I: Integer;
+      LCurrentItem: TListItem;
+    begin
+      MessageDlg(AError, mtError, [mbOK], 0);
+
+      LCurrentItem := nil;
+      for I := 0 to lvTasks.Items.Count - 1 do
+      begin
+        if Integer(lvTasks.Items[I].Data) = LId then
+        begin
+          LCurrentItem := lvTasks.Items[I];
+          Break;
+        end;
+      end;
+
+      if Assigned(LCurrentItem) then
+      begin
+        FUpdatingList := True;
+        try
+          LCurrentItem.Checked := not LCurrentItem.Checked;
+        finally
+          FUpdatingList := False;
+        end;
+      end;
+    end
+  );
 end;
 
 procedure TfrmMain.lvTasksCustomDrawSubItem(Sender: TCustomListView;

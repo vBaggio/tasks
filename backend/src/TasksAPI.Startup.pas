@@ -25,35 +25,27 @@ const
 
 class procedure TAppStartup.Execute;
 var
-  LConn: IConnection;
-  LTaskRepository: ITaskRepository;
-  LUserRepository: IUserRepository;
-  LTaskService: ITaskService;
-  LAuthService: IAuthService;
   LController: TTaskController;
 begin
   try
-    WriteLn('Conectando ao banco de dados...');
-    LConn := TConnectionFactory.ConnMSSQL;
-    WriteLn('Conectado com sucesso.');
-
-    LUserRepository := TUserRepository.Create;
-    LAuthService := TAuthService.Create(LUserRepository);
+    WriteLn('Testando conexão inicial com o banco de dados...');
+    TConnectionFactory.ConnMSSQL; // Initial test, will close naturally
+    WriteLn('Conectado com sucesso. Pool habilitado.');
 
     //Middlewares
     THorse.Use(HandleException(ExceptionCallback));
     THorse.Use(HorseBasicAuthentication(
       function(const AUsername, APassword: string): Boolean
+      var
+        LAuthService: IAuthService;
       begin
+        LAuthService := TAuthService.Create(TUserRepository.Create);
         Result := LAuthService.Validate(AUsername, APassword);
       end
     ));
 
-    LTaskRepository := TTaskRepository.Create(LConn);
-    LTaskService := TTaskService.Create(LTaskRepository);
-
     //Controller rest
-    LController := TTaskController.Create(LTaskService);
+    LController := TTaskController.Create;
     try
       LController.RegisterRoutes;
 
