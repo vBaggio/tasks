@@ -139,7 +139,7 @@ begin
     end,
     procedure(AError: string)
     begin
-      // Opcional: tratar erro ou logar para o console
+      //TODO
     end
   );
 end;
@@ -218,7 +218,6 @@ begin
       I: Integer;
       LCurrentItem: TListItem;
     begin
-      // TThread.Queue is handled inside the controller, so UI updates are safe here.
       LCurrentItem := nil;
       for I := 0 to lvTasks.Items.Count - 1 do
       begin
