@@ -1,4 +1,4 @@
-unit TasksClient.Model.Dto.Task;
+﻿unit TasksClient.Model.Dto.Task;
 
 interface
 

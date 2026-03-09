@@ -28,7 +28,8 @@ begin
   LSetupConfig := AConfig;
   LSetupConfig.Database := '';
   try
-    // Passando APooled=False para nao registrar no Pool
+    //Cria banco de dados (schema) caso não exista
+    //Passando APooled=False para nao registrar no Pool
     LSetupConn := TConnectionMSSQL.Create(LSetupConfig, False);
     LSetupConn.GetConn.ExecSQL(
       'IF DB_ID(N''' + LDatabase + ''') IS NULL ' +
@@ -39,7 +40,8 @@ begin
       WriteLn('Aviso: n'+#227+'o foi possivel verificar/criar o banco "' + LDatabase + '": ' + E.Message);
   end;
 
-  // Passando APooled=False para nao registrar no Pool na criacao de tabelas
+  //Cria tabela caso não exista
+  //Passando APooled=False para nao registrar no Pool
   LAppConn := TConnectionMSSQL.Create(AConfig, False);
   LAppConn.GetConn.ExecSQL(
     'IF OBJECT_ID(N''dbo.tasks'', N''U'') IS NULL ' +

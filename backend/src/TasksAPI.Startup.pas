@@ -32,7 +32,9 @@ var
   LAppConfig: TAppConfig;
 begin
   try
+    //Carrega as configurações .ini
     LAppConfig := TConfigLoader.Load;
+    
     LConnFactory := TConnectionFactory.Create(LAppConfig.Database);
     
     WriteLn('Testando conexão inicial e preparando tabelas do banco...');
@@ -42,8 +44,15 @@ begin
     LRepFactory := TRepositoryFactory.Create(LConnFactory);
     LServiceFactory := TServiceFactory.Create(LRepFactory);
 
-    //Middlewares
-    THorse.Use(HandleException(ExceptionCallback));
+    //Middleware Exception Handler para definir o padrão de resposta de erros
+    THorse.Use(HandleException(
+      procedure (const E: Exception; const Req: THorseRequest; const Res: THorseResponse; var ASendException: Boolean)
+      begin
+        TExceptionHandler.Handle(E, Req, Res, ASendException);
+      end
+    ));
+    
+    //Middleware de Autenticação Básica
     THorse.Use(HorseBasicAuthentication(
       function(const AUsername, APassword: string): Boolean
       var
@@ -54,8 +63,10 @@ begin
       end
     ));
 
+    //Controller para gerenciar as rotas da api, recebe a factory de serviços como injeção de dependência
     LController := TTaskController.Create(LServiceFactory);
     try
+      //Registra as rotas da api no horse
       LController.RegisterRoutes;
 
       WriteLn('Inicializando API na porta ' + LAppConfig.Server.Port.ToString + '...');

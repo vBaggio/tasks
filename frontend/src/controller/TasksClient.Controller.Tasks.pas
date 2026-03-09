@@ -1,4 +1,4 @@
-unit TasksClient.Controller.Tasks;
+﻿unit TasksClient.Controller.Tasks;
 
 interface
 
@@ -50,6 +50,7 @@ end;
 
 procedure TTaskController.GetStatsAsync(AOnSuccess: TProc<TTaskStatsDto>; AOnError: TProc<string>);
 begin
+  //Usa PPL para fazer a chamada a api para não travar a UI
   TTask.Run(
     procedure
     var
@@ -87,6 +88,9 @@ end;
 
 function TTaskController.CreateTask(const ARequest: TCreateTaskRequestDto): TTaskResponseDto;
 begin
+  if ARequest.Title.Trim.isEmpty then
+    raise Exception.Create('O título é obrigatório.');
+
   Result := FApiClient.CreateTask(ARequest);
 end;
 
@@ -97,6 +101,7 @@ end;
 
 procedure TTaskController.UpdateStatusAsync(AId: Integer; AStatus: Integer; AOnSuccess: TProc; AOnError: TProc<string>);
 begin
+  //Usa PPL para fazer a chamada a api para não travar a UI
   TTask.Run(
     procedure
     var

@@ -146,6 +146,7 @@ end;
 
 procedure TfrmMain.RefreshAll;
 begin
+  //Aqui por ser um evento menos frequente, será realizado de forma síncrona na main thread
   try
     LoadTasks;
     LoadStats;
@@ -212,12 +213,14 @@ begin
   LId := Integer(Item.Data);
   LNewStatus := Ord(Item.Checked);
 
+  //A Api será chamada de forma assíncrona, pois é um evento de alta frequencia
   FController.UpdateStatusAsync(LId, LNewStatus,
     procedure // OnSuccess
     var
       I: Integer;
       LCurrentItem: TListItem;
     begin
+      //Acha o item de novo, pois como é assíncrono, existe a possibilidade remota de o grid ter sido atualizado
       LCurrentItem := nil;
       for I := 0 to lvTasks.Items.Count - 1 do
       begin
@@ -243,6 +246,7 @@ begin
       I: Integer;
       LCurrentItem: TListItem;
     begin
+      //Esse evento será chamado pelo Thread.Queue, então será executado pela main thread
       MessageDlg(AError, mtError, [mbOK], 0);
 
       LCurrentItem := nil;

@@ -8,6 +8,7 @@ uses
   TasksAPI.Model.Dto.Stats;
 
 type
+  //Aqui é onde ficam as regras de negócio e validações
   ITaskService = interface
     ['{C4E2D3F5-A6B7-4890-ABCD-EF1234567890}']
     function ListAll: TObjectList<TTaskModel>;

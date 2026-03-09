@@ -1,4 +1,4 @@
-unit TasksClient.Startup;
+﻿unit TasksClient.Startup;
 
 interface
 
@@ -25,9 +25,14 @@ var
   LApiClient: ITaskApiClient;
   LController: TTaskController;
 begin
+  //Carrega do .ini
   LConfig := TClientConfigLoader.Load;
+
+  { Client HTTP responsável por se comunicar com o backend através do RESTRequest4D,
+    utiliza a biblioteca Neon para serializar/desserializar as requisições e respostas }
   LApiClient := TTaskApiClient.Create(LConfig);
 
+  //Intermediário entre o client http e a view
   LController := TTaskController.Create(LApiClient);
   try
     Application.Initialize;

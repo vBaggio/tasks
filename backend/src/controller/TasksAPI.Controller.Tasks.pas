@@ -1,4 +1,4 @@
-unit TasksAPI.Controller.Tasks;
+﻿unit TasksAPI.Controller.Tasks;
 
 interface
 
@@ -11,6 +11,10 @@ type
   TTaskController = class
   private
     FServiceFactory: IServiceFactory;
+
+    { Métodos correspondentes aos endpoints da api, usam o ServiceFactory
+      para instanciar individualmente um service por por requisição. 
+      Usam a biblioteca Neon para serializar/desserializar JSON em records DTO }
     procedure HandleGetStats(Req: THorseRequest; Res: THorseResponse);
     procedure HandleGetAll(Req: THorseRequest; Res: THorseResponse);
     procedure HandleCreate(Req: THorseRequest; Res: THorseResponse);
@@ -50,7 +54,7 @@ procedure RequireBody(Req: THorseRequest);
 begin
   if Req.Body = '' then
     raise EHorseException.New
-      .Error('Corpo da requisi'#231#227'o n'#227'o pode estar vazio.')
+      .Error('Corpo da requisição não pode estar vazio.')
       .Status(THTTPStatus.BadRequest);
 end;
 
@@ -61,7 +65,7 @@ begin
   except
     on E: EConvertError do
       raise EHorseException.New
-        .Error('ID inv'#225'lido.')
+        .Error('ID inválido.')
         .Status(THTTPStatus.BadRequest);
   end;
 end;

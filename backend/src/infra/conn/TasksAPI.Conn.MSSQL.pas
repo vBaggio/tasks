@@ -43,6 +43,7 @@ begin
   FConfig := AConfig;
   FConnection := TFDConnection.Create(nil);
 
+  //Usa pool de conexões do firedac para performance e suportar alto volume de requisições mantendo a api stateless
   if APooled then
   begin
     if not FDManager.IsConnectionDef(CONNECTION_DEF_NAME) then

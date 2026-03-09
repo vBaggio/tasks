@@ -10,6 +10,9 @@ uses
 
 {$M+}
 type
+  //Camada de acesso a dados
+
+  //Converte os dados relacionais do banco de dados em entidade de negócio
   ITaskRepository = interface
     ['{A3F1C2E4-B5D6-4789-9ABC-DEF012345678}']
     function FindAll: TObjectList<TTaskModel>;
@@ -21,6 +24,7 @@ type
     function TaskExists(AId: Integer): Boolean;
   end;
 
+  //Retorna Usuário/Senha hardcoded, apenas para propósito de demonstração da autenticação
   IUserRepository = interface
     ['{F1A2B3C4-D5E6-4789-ABCD-EF0123456789}']
     function FindByUsername(const AUsername: string): TUserModel;
@@ -32,7 +36,6 @@ type
     function CreateTaskRepository: ITaskRepository;
     function CreateUserRepository: IUserRepository;
   end;
-
 {$M-}
 
 implementation

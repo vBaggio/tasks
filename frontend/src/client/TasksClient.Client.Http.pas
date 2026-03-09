@@ -18,6 +18,8 @@ type
     FConfig: TClientConfig;
     FNeonConfig: INeonConfiguration;
     function GetError(const AResponseBody: string): string;
+
+    // Analisa o status code da API e caso seja >= 400, capta a mensagem de erro (caso exista) e lança as exceções
     procedure ValidateResponse(AStatusCode: Integer; const AResponseBody: string);
     procedure RaiseConnectionError;
     function CreateRequest(const APath: string): IRequest;

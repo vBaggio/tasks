@@ -70,13 +70,12 @@ Este projeto exibe domínio sólido na orientação a objetos (POO), empregando 
 A aplicação foi desenvolvida no **Delphi 10.3 Rio**. No desenvolvimento, foi utilizado o **Microsoft SQL Server 2022**.
 
 > [!WARNING]
-> **Aviso de Compilação:** O projeto **NÃO** poderá ser compilado no *Delphi Community*, pois não contempla o driver FireDAC para o SQL Server.
+> **Aviso de Compilação:** O projeto **NÃO** poderá ser compilado no *Delphi Community*, pois a edição não contempla o driver FireDAC para o SQL Server.
 
 > [!NOTE]
 > **Gerenciamento de Pacotes:** Todas as bibliotecas de terceiros listadas abaixo dependem do **Boss** (Dependency Manager para Delphi) para funcionarem. Elas devem ser restauradas via linha de comando (`boss install`), conforme detalhado mais adiante no Guia de Setup.
 
 ### Dependências Backend
-As seguintes dependências externas foram utilizadas na aplicação:
 - [Horse](https://github.com/HashLoad/horse) - Framework web extremamento rápido para criar APIs REST em Delphi.
 - [Horse Basic Auth](https://github.com/HashLoad/horse-basic-auth) - Middleware para proteção das rotas contra acessos não autorizados.
 - [Horse Exception](https://github.com/HashLoad/horse-exception) - Middleware global adotado no projeto para centralizar, catalogar e padronizar o payload de erros HTTP (`Status 500, 404, 401...`) lançados pelas APIs (*Exceptions* do código).

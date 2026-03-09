@@ -13,7 +13,6 @@ uses
 type
   TExceptionHandler = class
   private
-    class procedure SendError(const Res: THorseResponse; const AMessage: string; AStatus: Integer);
     class procedure HandleNotFound(const E: ENotFoundException; const Res: THorseResponse);
     class procedure HandleValidation(const E: EValidationException; const Res: THorseResponse);
     class procedure HandleInternal(const Res: THorseResponse);
@@ -21,37 +20,35 @@ type
     class procedure Handle(const E: Exception; const Req: THorseRequest; const Res: THorseResponse; var ASendException: Boolean);
   end;
 
-  procedure ExceptionCallback(const E: Exception; const Req: THorseRequest; const Res: THorseResponse; var ASendException: Boolean);
-
 implementation
 
 { TExceptionHandler }
 
-class procedure TExceptionHandler.SendError(const Res: THorseResponse; const AMessage: string; AStatus: Integer);
-begin
-  Res.Status(AStatus).Send(AMessage);
-end;
 
 class procedure TExceptionHandler.HandleNotFound(const E: ENotFoundException; const Res: THorseResponse);
 begin
-  SendError(Res, E.Message, THTTPStatus.NotFound.ToInteger);
+  Res.Status(THTTPStatus.NotFound.ToInteger).Send(E.Message);
 end;
 
 class procedure TExceptionHandler.HandleValidation(const E: EValidationException; const Res: THorseResponse);
 begin
-  SendError(Res, E.Message, THTTPStatus.UnprocessableEntity.ToInteger);
+  Res.Status(THTTPStatus.UnprocessableEntity.ToInteger).Send(E.Message);
 end;
 
 class procedure TExceptionHandler.HandleInternal(const Res: THorseResponse);
 begin
-  SendError(Res, 'Ocorreu um erro interno.', THTTPStatus.InternalServerError.ToInteger);
+  //Não expõe mensagem de erro não tratado ou não previsto na resposta da api
+  Res.Status(THTTPStatus.InternalServerError.ToInteger).Send('Ocorreu um erro interno. Verifique o console.');
 end;
 
 class procedure TExceptionHandler.Handle(const E: Exception; const Req: THorseRequest; const Res: THorseResponse; var ASendException: Boolean);
 begin
   ASendException := False;
 
+  //Loga erro no console
   WriteLn(E.ClassName + ': ' + E.Message);
+
+  //Delega tratamento para o método apropriado de acordo com o tipo da exceção:
 
   if E is ENotFoundException then
     HandleNotFound(ENotFoundException(E), Res)
@@ -61,12 +58,6 @@ begin
 
   else
     HandleInternal(Res);
-end;
-
-procedure ExceptionCallback(const E: Exception; const Req: THorseRequest;
-  const Res: THorseResponse; var ASendException: Boolean);
-begin
-  TExceptionHandler.Handle(E, Req, Res, ASendException);
 end;
 
 end.
