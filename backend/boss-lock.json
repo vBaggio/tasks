@@ -1,6 +1,6 @@
 {
-	"hash": "d41d8cd98f00b204e9800998ecf8427e",
-	"updated": "2026-03-06T22:18:36.8406673-03:00",
+	"hash": "d8565a782566847681d5a181728fee4c",
+	"updated": "2026-03-09T00:37:18.6733577-03:00",
 	"installedModules": {
 		"github.com/hashload/handle-exception": {
 			"name": "handle-exception",
@@ -43,9 +43,9 @@
 			"changed": false
 		},
 		"https://github.com/vsofttechnologies/delphi-mocks": {
-			"name": "Delphi-Mocks",
-			"version": "master",
-			"hash": "54ed65a38ee9bb344548c75632788098",
+			"name": "delphi-mocks",
+			"version": "v0.3.1",
+			"hash": "cab49cbb88e935294132f93975ddb43f",
 			"artifacts": {},
 			"failed": false,
 			"changed": false
