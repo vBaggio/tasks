@@ -12,6 +12,7 @@ implementation
 
 uses
   System.SysUtils, Horse, Horse.HandleException, Horse.BasicAuthentication,
+  TasksAPI.Config, 
   TasksAPI.Conn.Interfaces, TasksAPI.Conn.Factory,
   TasksAPI.Repository.Interfaces, TasksAPI.Repository.Task,
   TasksAPI.Repository.User,
@@ -22,18 +23,17 @@ uses
   TasksAPI.Controller.Tasks,
   TasksAPI.Controller.ExceptionHandler;
 
-const
-  PORT = 9000;
-
 class procedure TAppStartup.Execute;
 var
   LController: TTaskController;
   LConnFactory: IConnectionFactory;
   LRepFactory: IRepositoryFactory;
   LServiceFactory: IServiceFactory;
+  LAppConfig: TAppConfig;
 begin
   try
-    LConnFactory := TConnectionFactory.Create;
+    LAppConfig := TConfigLoader.Load;
+    LConnFactory := TConnectionFactory.Create(LAppConfig.Database);
     
     WriteLn('Testando conexão inicial e preparando tabelas do banco...');
     LConnFactory.SetupDatabase;
@@ -58,8 +58,8 @@ begin
     try
       LController.RegisterRoutes;
 
-      WriteLn('Inicializando API na porta ' + PORT.ToString + '...');
-      THorse.Listen(PORT);
+      WriteLn('Inicializando API na porta ' + LAppConfig.Server.Port.ToString + '...');
+      THorse.Listen(LAppConfig.Server.Port);
       WriteLn('Encerrando aplicação...');
     finally
       LController.Free;

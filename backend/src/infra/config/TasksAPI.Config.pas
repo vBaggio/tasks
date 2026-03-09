@@ -1,4 +1,4 @@
-unit TasksAPI.Conn.Config;
+unit TasksAPI.Config;
 
 interface
 
@@ -6,11 +6,20 @@ uses
   TasksAPI.Conn.Interfaces;
 
 type
-  TConnectionConfigLoader = class
+  TServerConfig = record
+    Port: Integer;
+  end;
+
+  TAppConfig = record
+    Database: TConnectionConfig;
+    Server: TServerConfig;
+  end;
+
+  TConfigLoader = class
   private
     class procedure CreateDefault(const AIniPath: string); static;
   public
-    class function Load: TConnectionConfig; static;
+    class function Load: TAppConfig; static;
   end;
 
 implementation
@@ -20,7 +29,7 @@ uses
   System.IniFiles,
   System.IOUtils;
 
-class procedure TConnectionConfigLoader.CreateDefault(const AIniPath: string);
+class procedure TConfigLoader.CreateDefault(const AIniPath: string);
 var
   LIniFile: TIniFile;
 begin
@@ -31,13 +40,15 @@ begin
     LIniFile.WriteString('Database', 'Database', 'TaskDB');
     LIniFile.WriteString('Database', 'UserName', 'sa');
     LIniFile.WriteString('Database', 'Password', 'MasterPassword@2026');
+
+    LIniFile.WriteInteger('Server', 'Port', 9000);
   finally
     LIniFile.Free;
   end;
   WriteLn('Arquivo de configuracao criado com valores padrao: ' + AIniPath);
 end;
 
-class function TConnectionConfigLoader.Load: TConnectionConfig;
+class function TConfigLoader.Load: TAppConfig;
 var
   LIniPath: string;
   LIniFile: TIniFile;
@@ -48,11 +59,13 @@ begin
 
   LIniFile := TIniFile.Create(LIniPath);
   try
-    Result.Server   := LIniFile.ReadString('Database', 'Server',   'localhost');
-    Result.Port     := LIniFile.ReadString('Database', 'Port',     '1433');
-    Result.Database := LIniFile.ReadString('Database', 'Database', 'TaskDB');
-    Result.UserName := LIniFile.ReadString('Database', 'UserName', 'sa');
-    Result.Password := LIniFile.ReadString('Database', 'Password', 'MasterPassword@2026');
+    Result.Database.Server   := LIniFile.ReadString('Database', 'Server',   'localhost');
+    Result.Database.Port     := LIniFile.ReadString('Database', 'Port',     '1433');
+    Result.Database.Database := LIniFile.ReadString('Database', 'Database', 'TaskDB');
+    Result.Database.UserName := LIniFile.ReadString('Database', 'UserName', 'sa');
+    Result.Database.Password := LIniFile.ReadString('Database', 'Password', 'MasterPassword@2026');
+
+    Result.Server.Port := LIniFile.ReadInteger('Server', 'Port', 9000);
   finally
     LIniFile.Free;
   end;

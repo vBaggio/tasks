@@ -10,7 +10,7 @@ uses
   TasksAPI.Startup in 'src\TasksAPI.Startup.pas',
   TasksAPI.Controller.Tasks in 'src\controller\TasksAPI.Controller.Tasks.pas',
   TasksAPI.Conn.Interfaces in 'src\infra\conn\TasksAPI.Conn.Interfaces.pas',
-  TasksAPI.Conn.Config in 'src\infra\conn\TasksAPI.Conn.Config.pas',
+  TasksAPI.Config in 'src\infra\config\TasksAPI.Config.pas',
   TasksAPI.Conn.MSSQL in 'src\infra\conn\TasksAPI.Conn.MSSQL.pas',
   TasksAPI.Conn.Factory in 'src\infra\conn\TasksAPI.Conn.Factory.pas',
   TasksAPI.Repository.Factory in 'src\repository\TasksAPI.Repository.Factory.pas',

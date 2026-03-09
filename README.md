@@ -111,7 +111,7 @@ docker-compose up -d
 *(Caso queira usar uma instalação já existente do MSSQL Server, basta apontar as credenciais para o seu servidor no arquivo `TasksAPI.ini`, pulando a etapa do Docker. O sistema se encarregará de auto-criar o banco de dados (com o nome definido no `.ini`) e as tabelas em tempo de execução, caso não existam).*
 
 ### 3. Configurações de Acesso (.ini)
-- Em `backend/bin` existe o arquivo `TasksAPI.ini`, onde é possível configurar as credenciais do banco de dados.
+- Em `backend/bin` existe o arquivo `TasksAPI.ini`, onde é possível configurar as credenciais do banco de dados (Sessão `[Database]`) e a porta do servidor da API (Sessão `[Server]`, Padrão: 9000).
 - Em `frontend/bin` existe o arquivo `TasksClient.ini`, onde é possível configurar a url da API e as credenciais de autenticação.
 
 Ambos são autogerados na primeira execução, mas também estão presentes no repositório, pré-configurados com valores padrão.

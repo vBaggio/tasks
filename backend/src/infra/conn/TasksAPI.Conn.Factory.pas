@@ -3,7 +3,6 @@ unit TasksAPI.Conn.Factory;
 interface
 
 uses
-  TasksAPI.Conn.Config,
   TasksAPI.Conn.Interfaces;
 
 type
@@ -11,7 +10,7 @@ type
   private
     FConfig: TConnectionConfig;
   public
-    constructor Create;
+    constructor Create(const AConfig: TConnectionConfig);
 
     procedure SetupDatabase;
     function CreateConnection: IConnection;
@@ -29,9 +28,9 @@ begin
   Self.CreateConnection; //inicializa o pool firedac
 end;
 
-constructor TConnectionFactory.Create;
+constructor TConnectionFactory.Create(const AConfig: TConnectionConfig);
 begin
-  FConfig := TConnectionConfigLoader.Load;
+  FConfig := AConfig;
 end;
 
 function TConnectionFactory.CreateConnection: IConnection;
