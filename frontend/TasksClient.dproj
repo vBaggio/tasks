@@ -57,7 +57,7 @@
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>TasksClient</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\delphi-neon\Source;..\modules\restrequest4delphi\src;modules\.dcp;modules\.dcu;modules;modules\delphi-neon\Source;modules\restrequest4delphi\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\modules\.dcp;..\modules\.dcu;..\modules;..\modules\delphi-neon\Source;..\modules\restrequest4delphi\src;$(DCC_UnitSearchPath);modules\.dcp;modules\.dcu;modules;modules\delphi-neon\Source;modules\restrequest4delphi\src</DCC_UnitSearchPath>
         <DCC_ExeOutput>.\bin</DCC_ExeOutput>
         <VerInfo_Locale>1046</VerInfo_Locale>
     </PropertyGroup>

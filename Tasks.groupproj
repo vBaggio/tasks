@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E104E831-E6FB-4902-A9AD-5FC6F3330F1F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="backend\TasksAPI.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="backend\tests\TasksAPITests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="frontend\TasksClient.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TasksAPI">
+        <MSBuild Projects="backend\TasksAPI.dproj"/>
+    </Target>
+    <Target Name="TasksAPI:Clean">
+        <MSBuild Projects="backend\TasksAPI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TasksAPI:Make">
+        <MSBuild Projects="backend\TasksAPI.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TasksAPITests">
+        <MSBuild Projects="backend\tests\TasksAPITests.dproj"/>
+    </Target>
+    <Target Name="TasksAPITests:Clean">
+        <MSBuild Projects="backend\tests\TasksAPITests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TasksAPITests:Make">
+        <MSBuild Projects="backend\tests\TasksAPITests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TasksClient">
+        <MSBuild Projects="frontend\TasksClient.dproj"/>
+    </Target>
+    <Target Name="TasksClient:Clean">
+        <MSBuild Projects="frontend\TasksClient.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TasksClient:Make">
+        <MSBuild Projects="frontend\TasksClient.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TasksAPI;TasksAPITests;TasksClient"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TasksAPI:Clean;TasksAPITests:Clean;TasksClient:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TasksAPI:Make;TasksAPITests:Make;TasksClient:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
