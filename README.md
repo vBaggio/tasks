@@ -8,27 +8,27 @@ O projeto foi dividido em duas pontas: um **Backend (API REST)** e um **Frontend
 
 ## Arquitetura e Estrutura
 
-Visão macro dos diretórios e módulos do ecossistema:
 ```text
 📦 tasks
  ┣ 📂 backend
- ┃ ┣ 📂 bin         (Executável da API e TasksAPI.ini gerado)
- ┃ ┣ 📂 modules     (Dependências do Boss)
+ ┃ ┣ 📂 bin
+ ┃ ┣ 📂 modules
  ┃ ┣ 📂 src
- ┃ ┃ ┣ 📂 controller (Rotas e Endpoints HTTP)
- ┃ ┃ ┣ 📂 infra      (Conexão FireDAC e Migrate nativo do MSSQL)
- ┃ ┃ ┣ 📂 model      (Entidades do Banco e Objects de Transferência DTO)
- ┃ ┃ ┣ 📂 repository (Implementações de DAL abstract-factory)
- ┃ ┃ ┗ 📂 service    (Regras de negócio e Injeções transientes)
- ┃ ┣ 📂 tests       (Projeto de Testes Unitários via DUnitX)
+ ┃ ┃ ┣ 📂 controller
+ ┃ ┃ ┣ 📂 infra
+ ┃ ┃ ┣ 📂 model
+ ┃ ┃ ┣ 📂 repository
+ ┃ ┃ ┗ 📂 service
+ ┃ ┣ 📂 tests
  ┃ ┗ 📜 TasksAPI.dpr
  ┣ 📂 frontend
- ┃ ┣ 📂 bin         (Executável VCL e TasksClient.ini)
- ┃ ┣ 📂 modules     (Dependências do Boss)
+ ┃ ┣ 📂 bin
+ ┃ ┣ 📂 modules
  ┃ ┣ 📂 src
- ┃ ┃ ┣ 📂 controller (Gerenciamento de eventos de tela)
- ┃ ┃ ┣ 📂 model      (DTOs, Requests p/ API e background de UI)
- ┃ ┃ ┗ 📂 view       (Formulários, Frames e Componentes visuais)
+ ┃ ┃ ┣ 📂 client
+ ┃ ┃ ┣ 📂 controller
+ ┃ ┃ ┣ 📂 model
+ ┃ ┃ ┗ 📂 view
  ┃ ┗ 📜 TasksClient.dpr
  ┣ 📜 docker-compose.yml
  ┗ 📜 README.md
@@ -38,7 +38,9 @@ Visão macro dos diretórios e módulos do ecossistema:
 Construído utilizando o clássico padrão de **Arquitetura em 3 Camadas (3-Tier Architecture)** focado em APIs, separando perfeitamente a exposição HTTP, a lógica de negócios e a persistência:
 - **Controller:** Ponto de entrada (endpoints). Responsável pelo roteamento gerido pelo middleware do Horse, tratando requisições e formatando respostas JSON.
 - **Service:** Onde habitam as regras de negócio. Orquestra a lógica isolada da persistência, intermediando as requisições dos Controllers para os Repositórios.
-- **Repository:** Camada que consome o objeto de conexão, executa as query SQLs e traduz os retornos de banco para as entidades (Models) do sistema.
+- **Repository:** Camada de acesso a dados, responsável por executar as query SQLs e traduzir os retornos de banco para as entidades (Models) do sistema.
+- **Model:** Entidades e DTOs que representam os dados do sistema.
+- **Infra:** Camada que contém implementações de infraestrutura, como a conexão com o banco de dados e as migrações.
 
 **Alta Concorrência e Escalabilidade:** 
 A API foi projetada para processar múltiplas requisições simultâneas sem bloqueios (*Thread Locks*). Para isso, foi implementado um ciclo de vida transiente nas injeções de dependências (*Transient DI*): cada requisição HTTP aciona Fábricas que instanciam seus próprios Serviços e Repositórios, obtendo uma conexão isolada com o MSSQL através do **Connection Pooling nativo do FireDAC**. Essa arquitetura isola o tráfego, elimina gargalos de concorrência e garante estabilidade.
@@ -46,11 +48,21 @@ A API foi projetada para processar múltiplas requisições simultâneas sem blo
 **Testes Unitários (DUnitX):**
 O backend conta com testes unitários desenvolvidos com o framework nativo **DUnitX** e biblioteca externa [Delphi Mocks](https://github.com/VSoftTechnologies/Delphi-Mocks). Devido à restrição de tempo máximo de entrega, a cobertura priorizou apenas a regra de negócio central da aplicação: o **`TaskService`**. A arquitetura do projeto baseada em *Interfaces* facilitou a criação de testes robustos que não dependem do banco de dados. Os repositórios irreais (*Mocks*) foram injetados simulando o comportamento do MSSQL, o projeto de testes está localizado no diretório `/backend/tests`. 
 
-### Frontend (VCL)
-Desenvolvido focado na reatividade e experiência do usuário (UX):
-- **User Interface (UI):** O design prioriza a leveza estética, tipografia limpa e fácil acesso sem poluição visual.
-- **Assincronismo (PPL):** Requisições com alto volume de dados ou interações com a API (como marcar as Tarefas e as chamadas de atualização das estatísticas) são intermediadas por `System.Threading.TTask`. Assinaturas de *Callbacks* em `TThread.Queue` cuidam da alteração dos formulários VCL sem travar a interface do usuário. Você pode acessar e re-clicar nas checkboxes sem engasgos de rede, contando com *Rollbacks* visuais em caso de falha de conexão.
-- **Data Transfer Objects (DTO):** A extração de dados não vem acoplada à persistência (o frontend dispensa *MemTables* acopladas ao banco). A formatação do texto (Datas relativas, status) já é processada no *Modelo DTO* assincronamente.
+### Frontend (VCL + RESTRequest4Delphi)
+Construído utilizando padrão MVC (Model-View-Controller):
+- **Model:** DTOs para receber os dados da requisição e Exceptions personalizadas.
+- **View:** Interface gráfica e componentes visuais.
+- **Controller:** Intermediador entre View e Client HTTP.
+- **Client:** Client HTTP responsável por fazer as requisições para a API.
+
+**User Interface (UI):** 
+O design prioriza a leveza estética, tipografia limpa e fácil acesso sem poluição visual.
+
+**Assincronismo (PPL):** 
+Requisições com alto volume de dados ou interações com a API (como marcar as Tarefas e as chamadas de atualização das estatísticas) são intermediadas por `System.Threading.TTask`. Assinaturas de *Callbacks* em `TThread.Queue` cuidam da alteração dos formulários VCL sem travar a interface do usuário. Você pode acessar e re-clicar nas checkboxes sem engasgos de rede, contando com *Rollbacks* visuais em caso de falha de conexão.
+
+**Data Transfer Objects (DTO):**
+A extração de dados não vem acoplada à persistência (o frontend dispensa *MemTables* acopladas ao banco). A formatação do texto (Datas relativas, status) já é processada no *Modelo DTO* assincronamente.
 
 ---
 
@@ -78,8 +90,9 @@ A aplicação foi desenvolvida no **Delphi 10.3 Rio**. No desenvolvimento, foi u
 ### Dependências Backend
 - [Horse](https://github.com/HashLoad/horse) - Framework web extremamento rápido para criar APIs REST em Delphi.
 - [Horse Basic Auth](https://github.com/HashLoad/horse-basic-auth) - Middleware para proteção das rotas contra acessos não autorizados.
-- [Horse Exception](https://github.com/HashLoad/horse-exception) - Middleware global adotado no projeto para centralizar, catalogar e padronizar o payload de erros HTTP (`Status 500, 404, 401...`) lançados pelas APIs (*Exceptions* do código).
+- [Handle Exception](https://github.com/HashLoad/handle-exception) - Middleware global adotado no projeto para centralizar, catalogar e padronizar o payload de erros HTTP (`Status 500, 404, 401...`) lançados pelas APIs (*Exceptions* do código).
 - [Neon](https://github.com/paolo-rossi/delphi-neon) - Biblioteca de serialização em JSON com suporte a records.
+- [Delphi Mocks](https://github.com/VSoftTechnologies/Delphi-Mocks) - Biblioteca para criação de mocks para testes unitários. (Usado apenas no projeto de testes unitários)
 
 ### Dependências Frontend
 - [RESTRequest4Delphi](https://github.com/viniciussanchez/RESTRequest4Delphi) - Biblioteca para abstração de consumo de APIs REST.
